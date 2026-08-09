@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Content Admin Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231c1c22'/><text x='50' y='65' font-family='sans-serif' font-size='45' font-weight='bold' fill='%23ffe600' text-anchor='middle'>CM</text></svg>">
+
+  <script>
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  </script>
+
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-container { padding: 40px 0; }
+    .admin-header { margin-bottom: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+    .admin-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .admin-card-title { font-size: 1.1rem; font-weight: 700; color: var(--yellow-primary); }
+    .preview-box { width: 100%; height: 200px; border-radius: 8px; overflow: hidden; background: var(--bg-surface); border: 1px dashed var(--border-color); position: relative; }
+    .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    .file-input { display: none; }
+    .btn-select { display: block; text-align: center; width: 100%; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-top: 10px; }
+    .btn-select:hover { border-color: var(--yellow-primary); }
+    .btn-save { width: 100%; margin-top: 10px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-input { width: 100%; padding: 8px 12px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; font-size: 0.9rem; }
+    .form-input:focus { border-color: var(--yellow-primary); outline: none; }
+  </style>
+</head>
+<body>
+
+  <header class="navbar-wrapper">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-mark">CM</div>
+          <div class="brand-name">ADMIN <span>PANEL</span></div>
+        </a>
+
+        <div class="nav-actions">
+          <button id="admin-theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+          <a href="index.html" class="cta-btn-nav">Back to Site</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container admin-container">
+    <div class="admin-header">
+      <h1 class="section-title">Website & Blog Content Dashboard</h1>
+      <p class="section-description">Publish new blog posts, edit home page card titles, images, and tech tags.</p>
+    </div>
+
+    <!-- Blog Publishing Section -->
+    <h2 class="section-subtitle" style="margin-bottom: 20px;">Publish New Blog Feed Post</h2>
+    <div class="admin-card" style="margin-bottom: 40px;">
+      <span class="badge-yellow">New Post</span>
+      <form id="blog-publish-form">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title (Optional)</label>
+          <input type="text" id="blog-title" class="form-input" placeholder="e.g. New update on Domasi Hub" />
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Post Content (Supports text or updates)</label>
+          <textarea id="blog-content" class="form-input" style="height: 100px;" placeholder="What's on your mind?" required></textarea>
+        </div>
+        <label class="btn-select" for="file-blog-image">Attach Photo (Optional)</label>
+        <input type="file" id="file-blog-image" class="file-input" accept="image/*" />
+        <button type="submit" class="btn-submit shimmer-effect btn-save">
+          <span>Publish Post</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Projects Section -->
+    <h2 class="section-subtitle" style="margin-bottom: 20px;">Featured Projects Section</h2>
+    <div class="admin-grid" style="margin-bottom: 40px;">
+      
+      <div class="admin-card">
+        <span class="badge-yellow">Project Card</span>
+        <h3 class="admin-card-title">Domasi Hub Preview</h3>
+        <div class="preview-box">
+          <img id="prev-domasi-preview-img" src="uploads/domasi-1.jpg" alt="Preview" />
+        </div>
+        <form class="upload-form" data-element="domasi-preview-img">
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
+            <input type="text" name="title" class="form-input title-input" placeholder="Project Title" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Subtitle / Description</label>
+            <input type="text" name="subtitle" class="form-input subtitle-input" placeholder="Project Subtitle" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Tech Stack Tags (Comma separated)</label>
+            <input type="text" name="tech_tags" class="form-input tech-tags-input" placeholder="Node.js, Express, PostgreSQL" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Live Demo URL</label>
+            <input type="url" name="live_demo_url" class="form-input demo-url-input" placeholder="https://domasihub.netlify.app" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">GitHub Repository URL</label>
+            <input type="url" name="github_url" class="form-input github-url-input" placeholder="https://github.com/craigmzumara" />
+          </div>
+
+          <label class="btn-select" for="file-domasi">Choose New Image (Optional)</label>
+          <input type="file" id="file-domasi" class="file-input" accept="image/*" data-target-img="prev-domasi-preview-img" />
+          <button type="submit" class="btn-submit shimmer-effect btn-save">
+            <span>Save Changes</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Photography Section -->
+    <h2 class="section-subtitle" style="margin-bottom: 20px;">Photography Gallery Section</h2>
+    <div class="admin-grid">
+      
+      <!-- Card: Photo 1 -->
+      <div class="admin-card">
+        <span class="badge-yellow">Photography Card 1</span>
+        <h3 class="admin-card-title">Photo Slot 1</h3>
+        <div class="preview-box">
+          <img id="prev-photo-1" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&fm=webp&q=80" alt="Preview" />
+        </div>
+        <form class="upload-form" data-element="photo-1">
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
+            <input type="text" name="title" class="form-input title-input" placeholder="e.g. Mountain Mist" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Subtitle</label>
+            <input type="text" name="subtitle" class="form-input subtitle-input" placeholder="e.g. Landscape & Mood" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Badge Tag</label>
+            <input type="text" name="badge" class="form-input badge-input" placeholder="e.g. Mobile Shot / Graded" />
+          </div>
+          <label class="btn-select" for="file-photo-1">Choose New Image (Optional)</label>
+          <input type="file" id="file-photo-1" class="file-input" accept="image/*" data-target-img="prev-photo-1" />
+          <button type="submit" class="btn-submit shimmer-effect btn-save">
+            <span>Save Changes</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Card: Photo 2 -->
+      <div class="admin-card">
+        <span class="badge-yellow">Photography Card 2</span>
+        <h3 class="admin-card-title">Photo Slot 2</h3>
+        <div class="preview-box">
+          <img id="prev-photo-2" src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&fm=webp&q=80" alt="Preview" />
+        </div>
+        <form class="upload-form" data-element="photo-2">
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
+            <input type="text" name="title" class="form-input title-input" placeholder="e.g. Urban Lights at Dusk" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Subtitle</label>
+            <input type="text" name="subtitle" class="form-input subtitle-input" placeholder="e.g. Street Photography" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Badge Tag</label>
+            <input type="text" name="badge" class="form-input badge-input" placeholder="e.g. Mobile Shot / Graded" />
+          </div>
+          <label class="btn-select" for="file-photo-2">Choose New Image (Optional)</label>
+          <input type="file" id="file-photo-2" class="file-input" accept="image/*" data-target-img="prev-photo-2" />
+          <button type="submit" class="btn-submit shimmer-effect btn-save">
+            <span>Save Changes</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Card: Photo 3 -->
+      <div class="admin-card">
+        <span class="badge-yellow">Photography Card 3</span>
+        <h3 class="admin-card-title">Photo Slot 3</h3>
+        <div class="preview-box">
+          <img id="prev-photo-3" src="https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=800&fm=webp&q=80" alt="Preview" />
+        </div>
+        <form class="upload-form" data-element="photo-3">
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
+            <input type="text" name="title" class="form-input title-input" placeholder="e.g. Golden Hour Horizon" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Subtitle</label>
+            <input type="text" name="subtitle" class="form-input subtitle-input" placeholder="e.g. Nature Photography" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Badge Tag</label>
+            <input type="text" name="badge" class="form-input badge-input" placeholder="e.g. Mobile Shot / Graded" />
+          </div>
+          <label class="btn-select" for="file-photo-3">Choose New Image (Optional)</label>
+          <input type="file" id="file-photo-3" class="file-input" accept="image/*" data-target-img="prev-photo-3" />
+          <button type="submit" class="btn-submit shimmer-effect btn-save">
+            <span>Save Changes</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast" class="toast" role="alert">
+    <span>Saved successfully!</span>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'http://localhost:3000'; // Placeholder URL for local API
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.file-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const targetImgId = e.target.getAttribute('data-target-img');
+          if (targetImgId && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              document.getElementById(targetImgId).src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        });
+      });
+
+      const themeToggleBtn = document.getElementById("admin-theme-toggle");
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", () => {
+          const currentTheme = document.documentElement.getAttribute("data-theme");
+          const newTheme = currentTheme === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", newTheme);
+          localStorage.setItem("theme", newTheme);
+        });
+      }
+
+      const blogForm = document.getElementById("blog-publish-form");
+      const toast = document.getElementById("toast");
+
+      if (blogForm) {
+        blogForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const title = document.getElementById("blog-title").value;
+          const content = document.getElementById("blog-content").value;
+          const fileInput = document.getElementById("file-blog-image");
+
+          const formData = new FormData();
+          formData.append("title", title);
+          formData.append("content", content);
+          if (fileInput.files[0]) {
+            formData.append("image", fileInput.files[0]);
+          }
+
+          try {
+            const res = await fetch(`${API_BASE_URL}/api/blog/posts`, {
+              method: "POST",
+              body: formData
+            });
+            const result = await res.json();
+            if (result.success) {
+              toast.classList.add("show");
+              blogForm.reset();
+              setTimeout(() => toast.classList.remove("show"), 3000);
+            }
+          } catch (err) {
+            alert("Failed to publish post.");
+            console.error(err);
+          }
+        });
+      }
+
+      fetch(`${API_BASE_URL}/api/images`)
+        .then(res => res.json())
+        .then(data => {
+          if (!Array.isArray(data)) return;
+          data.forEach(item => {
+            const previewImg = document.getElementById(`prev-${item.element_id}`);
+            if (previewImg && item.image_url) {
+              previewImg.src = item.image_url.startsWith('http') 
+                ? item.image_url 
+                : `${API_BASE_URL}/${item.image_url}`;
+            }
+
+            const form = document.querySelector(`.upload-form[data-element="${item.element_id}"]`);
+            if (form) {
+              if (item.title) form.querySelector(".title-input").value = item.title;
+              if (item.subtitle) form.querySelector(".subtitle-input").value = item.subtitle;
+              if (item.badge && form.querySelector(".badge-input")) {
+                form.querySelector(".badge-input").value = item.badge;
+              }
+              if (item.tech_tags && form.querySelector(".tech-tags-input")) {
+                form.querySelector(".tech-tags-input").value = item.tech_tags;
+              }
+              if (item.live_demo_url && form.querySelector(".demo-url-input")) {
+                form.querySelector(".demo-url-input").value = item.live_demo_url;
+              }
+              if (item.github_url && form.querySelector(".github-url-input")) {
+                form.querySelector(".github-url-input").value = item.github_url;
+              }
+            }
+          });
+        })
+        .catch(err => console.error("Error populating admin fields:", err));
+
+      const forms = document.querySelectorAll(".upload-form");
+
+      forms.forEach(form => {
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const elementId = form.getAttribute("data-element");
+          const fileInput = form.querySelector(".file-input");
+          const titleInput = form.querySelector(".title-input")?.value || "";
+          const subtitleInput = form.querySelector(".subtitle-input")?.value || "";
+          const badgeInput = form.querySelector(".badge-input")?.value || "";
+          const techTagsInput = form.querySelector(".tech-tags-input")?.value || "";
+          const demoUrlInput = form.querySelector(".demo-url-input")?.value || "";
+          const githubUrlInput = form.querySelector(".github-url-input")?.value || "";
+
+          const formData = new FormData();
+          formData.append("element_id", elementId);
+          formData.append("title", titleInput);
+          formData.append("subtitle", subtitleInput);
+          formData.append("badge", badgeInput);
+          formData.append("tech_tags", techTagsInput);
+          formData.append("live_demo_url", demoUrlInput);
+          formData.append("github_url", githubUrlInput);
+
+          if (fileInput && fileInput.files[0]) {
+            formData.append("image", fileInput.files[0]);
+          }
+
+          try {
+            const res = await fetch(`${API_BASE_URL}/api/upload`, {
+              method: "POST",
+              body: formData
+            });
+
+            const result = await res.json();
+            if (result.success) {
+              toast.classList.add("show");
+              setTimeout(() => toast.classList.remove("show"), 3000);
+            } else {
+              alert(result.error || "Update failed");
+            }
+          } catch (err) {
+            alert("Error updating data.");
+            console.error(err);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
