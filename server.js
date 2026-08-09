@@ -5,11 +5,13 @@ const multer = require('multer');
 const { createClient } = require('@supabase/supabase-js');
 const { Pool } = require('pg');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
 const publicDir = path.join(__dirname);
+const POST_TEMPLATE_PATH = path.join(__dirname, 'post.html');
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const SUPABASE_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'uploads';
@@ -166,13 +168,65 @@ app.post('/api/blog/posts', upload.single('image'), async (req, res) => {
   }
 });
 
-app.get('/api/blog/posts', async (req, res) => {
+app.get(['/api/blog/posts', '/api/posts', '/api/blog'], async (req, res) => {
   try {
-    const result = await query('SELECT * FROM public.blog_posts ORDER BY created_at DESC');
+    const result = await query(`
+      SELECT
+        p.*,
+        COALESCE(l.likes_count, 0) AS like_count,
+        COALESCE(c.comment_count, 0) AS comment_count
+      FROM public.blog_posts p
+      LEFT JOIN (
+        SELECT post_id, COUNT(*) AS likes_count
+        FROM public.blog_likes
+        GROUP BY post_id
+      ) l ON l.post_id = p.id
+      LEFT JOIN (
+        SELECT post_id, COUNT(*) AS comment_count
+        FROM public.blog_comments
+        GROUP BY post_id
+      ) c ON c.post_id = p.id
+      ORDER BY p.created_at DESC
+    `);
     res.json(result.rows);
   } catch (err) {
     console.error('Failed to load blog posts:', err);
     res.status(500).json({ error: 'Unable to load blog posts' });
+  }
+});
+
+app.get(['/api/blog/posts/:postId', '/api/posts/:postId', '/api/blog/:postId'], async (req, res) => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    const result = await query(`
+      SELECT
+        p.*,
+        COALESCE(l.likes_count, 0) AS like_count,
+        COALESCE(c.comment_count, 0) AS comment_count
+      FROM public.blog_posts p
+      LEFT JOIN (
+        SELECT post_id, COUNT(*) AS likes_count
+        FROM public.blog_likes
+        WHERE post_id = $1
+        GROUP BY post_id
+      ) l ON l.post_id = p.id
+      LEFT JOIN (
+        SELECT post_id, COUNT(*) AS comment_count
+        FROM public.blog_comments
+        WHERE post_id = $1
+        GROUP BY post_id
+      ) c ON c.post_id = p.id
+      WHERE p.id = $1
+    `, [postId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Failed to load blog post:', err);
+    res.status(500).json({ error: 'Unable to load blog post' });
   }
 });
 
@@ -190,9 +244,11 @@ app.post('/api/blog/posts/:postId/like', async (req, res) => {
     );
 
     const countResult = await query('SELECT COUNT(*) AS likes_count FROM public.blog_likes WHERE post_id = $1', [postId]);
-    const likesCount = parseInt(countResult.rows[0].likes_count, 10);
+    const likeCount = parseInt(countResult.rows[0].likes_count, 10);
 
-    res.json({ success: true, likes_count: likesCount });
+    await query('UPDATE public.blog_posts SET likes_count = $1 WHERE id = $2', [likeCount, postId]);
+
+    res.json({ success: true, like_count: likeCount });
   } catch (err) {
     console.error('Like failed:', err);
     res.status(500).json({ success: false, error: err.message || 'Like failed' });
@@ -226,12 +282,71 @@ app.post('/api/blog/posts/:postId/comments', async (req, res) => {
       [postId, author_name, comment_text]
     );
 
-    res.json({ success: true });
+    const countResult = await query('SELECT COUNT(*) AS comment_count FROM public.blog_comments WHERE post_id = $1', [postId]);
+    const commentCount = parseInt(countResult.rows[0].comment_count, 10);
+
+    res.json({ success: true, comment_count: commentCount });
   } catch (err) {
     console.error('Create comment failed:', err);
     res.status(500).json({ success: false, error: err.message || 'Failed to create comment' });
   }
 });
+
+app.get(['/post/:postId', '/blog/:postId'], async (req, res) => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    const result = await query(`
+      SELECT
+        p.*,
+        COALESCE(l.likes_count, 0) AS likes_count,
+        COALESCE(c.comment_count, 0) AS comment_count
+      FROM public.blog_posts p
+      LEFT JOIN (
+        SELECT post_id, COUNT(*) AS likes_count
+        FROM public.blog_likes
+        WHERE post_id = $1
+        GROUP BY post_id
+      ) l ON l.post_id = p.id
+      LEFT JOIN (
+        SELECT post_id, COUNT(*) AS comment_count
+        FROM public.blog_comments
+        WHERE post_id = $1
+        GROUP BY post_id
+      ) c ON c.post_id = p.id
+      WHERE p.id = $1
+    `, [postId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Post not found');
+    }
+
+    const post = result.rows[0];
+    const postHtml = fs.readFileSync(POST_TEMPLATE_PATH, 'utf8')
+      .replace(/%POST_TITLE%/g, escapeHtml(post.title || 'Blog Post'))
+      .replace(/%POST_DESCRIPTION%/g, escapeHtml((post.content || '').substring(0, 150)))
+      .replace(/%POST_IMAGE%/g, escapeHtml(post.image_url || 'https://craigmzumara.onrender.com/og-default.png'))
+      .replace(/%POST_URL%/g, `${SERVER_URL}/post/${postId}`)
+      .replace(/%POST_ID%/g, String(postId))
+      .replace(/%POST_CONTENT%/g, escapeHtml(post.content || ''))
+      .replace(/%POST_CREATED_AT%/g, escapeHtml(new Date(post.created_at).toLocaleDateString()))
+      .replace(/%POST_LIKE_COUNT%/g, String(post.like_count || 0))
+      .replace(/%POST_COMMENT_COUNT%/g, String(post.comment_count || 0));
+
+    res.send(postHtml);
+  } catch (err) {
+    console.error('Failed to render post view:', err);
+    res.status(500).send('Unable to render post');
+  }
+});
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 app.listen(PORT, () => {
   console.log(`Server running at ${SERVER_URL}`);

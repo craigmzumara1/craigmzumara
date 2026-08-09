@@ -62,6 +62,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+img.lazy-img {
+  opacity: 0;
+  filter: blur(16px);
+  transition: opacity 0.45s ease, filter 0.45s ease;
+}
+
+img.lazy-img.loaded {
+  opacity: 1;
+  filter: blur(0);
+}
+
 .container {
   max-width: 1140px;
   margin: 0 auto;
