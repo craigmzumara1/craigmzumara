@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Craig Mzumara — Web Developer & Student</title>
+  
+  <meta name="description" content="Portfolio of Craig Mzumara, a student, web developer, and visual creative from Malawi specializing in web applications and mobile photography." />
+  <meta name="google-site-verification" content="pkLxQxc2WNjfDNu-7zMASxxT0KY_RQCOpJp8rDTlT0Y" />
+  <!-- Open Graph / Social Share Meta Tags -->
+  <meta property="og:title" content="Craig Mzumara — Creative & Student" />
+  <meta property="og:description" content="Portfolio of Craig Mzumara, a student, web developer, and visual creative from Malawi specializing in web applications and mobile photography." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&fm=webp&q=80" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://craigmzumara.netlify.app" />
+
+  <!-- Inline SVG Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231c1c22'/><text x='50' y='65' font-family='sans-serif' font-size='45' font-weight='bold' fill='%23ffe600' text-anchor='middle'>CM</text></svg>">
+
+  <!-- Default to Dark Mode First -->
+  <script>
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  </script>
+  
+  <link rel="stylesheet" href="style.css" />
+  
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Craig Mzumara",
+      "url": "https://craigmzumara.netlify.app",
+      "jobTitle": "Web Developer & Student",
+      "sameAs": [
+        "https://mw.linkedin.com/in/craig-mzumara-7988202b4",
+        "https://github.com/craigmzumara",
+        "https://www.instagram.com/craigmzumara1",
+        "https://www.facebook.com/craigmzumara1",
+        "https://x.com/craigmzumara1"
+      ]
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Animated Ambient Glow Background -->
+  <div class="bg-glow floating-glow"></div>
+  <div class="bg-glow-secondary floating-glow-delay"></div>
+
+  <!-- Header Navigation -->
+  <header class="navbar-wrapper">
+    <div class="container">
+      <nav class="navbar">
+        <a href="#home" class="brand-logo">
+          <div class="logo-mark">CM</div>
+          <div class="brand-name">CRAIG <span>MZUMARA</span></div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <ul class="nav-links">
+          <li><a href="#home" class="nav-link active">Home</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#services" class="nav-link">Services</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#photography" class="nav-link">Photography</a></li>
+          <li><a href="blog.html" class="nav-link nav-blog-pill">Blog Feed</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <!-- Sun Icon (Light Mode) -->
+            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <!-- Moon Icon (Dark Mode) -->
+            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <a href="#contact" class="cta-btn-nav">Say Hello</a>
+
+          <!-- Mobile Menu Trigger -->
+          <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Navigation">
+            <svg class="menu-open-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <svg class="menu-close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Mobile Drawer Nav -->
+    <div id="mobile-drawer" class="mobile-drawer">
+      <ul class="mobile-nav-links">
+        <li><a href="#home" class="mobile-link">Home</a></li>
+        <li><a href="#about" class="mobile-link">About</a></li>
+        <li><a href="#services" class="mobile-link">Services</a></li>
+        <li><a href="#projects" class="mobile-link">Projects</a></li>
+        <li><a href="#photography" class="mobile-link">Photography</a></li>
+        <li><a href="blog.html" class="nav-link nav-blog-pill">Blog Feed</a></li>
+        <li><a href="#contact" class="mobile-link">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="container hero-grid">
+      
+      <!-- Left Column: Story & Introduction -->
+      <div class="hero-content reveal-on-scroll">
+        <div class="greeting-pill pulse-border">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Welcome to my digital workspace</span>
+        </div>
+
+        <h1 class="hero-title">
+          Hi, I’m <span class="highlight">Craig Mzumara</span> — Student, Creator & Tech Enthusiast.
+        </h1>
+
+        <!-- Modern Portrait Frame Inserted Above Paragraph -->
+        <div class="hero-portrait-frame">
+          <div class="portrait-wrapper">
+            <img src="uploads/portrait.jpg" alt="Craig Mzumara" class="portrait-img" />
+            
+            <!-- Modern Tech Overlays -->
+            <div class="portrait-overlay"></div>
+            <div class="portrait-badge">
+              <span class="status-dot"></span>
+              <span>Online</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="hero-bio">
+          I'm a 22-year-old student studying <strong>Mathematics and Computer Science</strong> in Zomba, Malawi. I combine logical thinking with creative design to build web applications, explore mobile photography, and color grade visual stories.
+        </p>
+
+        <!-- Interest Pills with Inline Icons -->
+        <div class="interest-pills">
+          <span class="pill highlighted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Mathematics
+          </span>
+          <span class="pill highlighted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Web Creation
+          </span>
+          <span class="pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Mobile Photography
+          </span>
+          <span class="pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+            Color Grading
+          </span>
+          <span class="pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 11 10 7 14 11 18 7 22 11 22 21 2 21 2 11 6 11"/></svg>
+            Gaming & Music
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary shimmer-effect">
+            <span>See My Work</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="#photography" class="btn-secondary">View Photos</a>
+        </div>
+      </div>
+
+      <!-- Right Column: Animated Visual Overview Card -->
+      <div class="profile-card float-animation reveal-on-scroll" id="about">
+        <!-- Your Hero Image Added Here -->
+        <div class="hero-image-container" style="text-align: center; margin-bottom: 20px;">
+          <img src="uploads/hero-me.jpg" alt="Craig Mzumara" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--yellow-primary);" />
+        </div>
+
+        <div class="card-heading">
+          <h3>At a Glance</h3>
+          <span class="badge-yellow">Creator Profile</span>
+        </div>
+
+        <div class="highlight-list">
+          <div class="highlight-item">
+            <div class="item-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="item-text">
+              <h4>Academic Focus</h4>
+              <p>Bachelor of Education in Sciences (Mathematics & Computer Science)</p>
+            </div>
+          </div>
+
+          <div class="highlight-item">
+            <div class="item-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div class="item-text">
+              <h4>Digital Craft</h4>
+              <p>Designing modern, responsive websites and practical web apps that run anywhere</p>
+            </div>
+          </div>
+
+          <div class="highlight-item">
+            <div class="item-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <div class="item-text">
+              <h4>Visual Arts</h4>
+              <p>Mobile photography enthusiast passionate about color grading and aesthetics</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="personal-quote">
+          "I enjoy taking complex ideas—whether in numbers, code, or photography—and making them simple, elegant, and useful."
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- Blog Callout Hero Banner Section -->
+<section class="blog-hero-banner reveal-on-scroll">
+  <div class="container">
+    <a href="blog.html" class="blog-hero-card">
+      <!-- Radial Ambient Background Glows -->
+      <div class="banner-ambient-glow"></div>
+      <div class="banner-border-glow"></div>
+
+      <div class="blog-hero-content">
+        <!-- Modern Live Badge -->
+        <div class="blog-badge">
+          <span class="pulsing-dot"></span>
+          <span class="badge-text">LATEST ARTICLES & INSIGHTS</span>
+        </div>
+
+        <h2 class="blog-hero-title">
+          Explore My Latest Posts, Thoughts & Tech Guides
+        </h2>
+
+        <p class="blog-hero-subtitle">
+          From full-stack development and computer science topics to creative design notes—press here to dive into the latest content.
+        </p>
+
+        <!-- Dynamic Action Indicator Button -->
+        <div class="blog-hero-cta">
+          <span class="cta-text">Read Latest Articles</span>
+          <div class="cta-icon-wrapper">
+            <!-- Modern SVG Arrow Right -->
+            <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modern Decorative SVG Graphic Element -->
+      <div class="blog-hero-svg-graphic" aria-hidden="true">
+        <svg width="220" height="220" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="80" stroke="var(--yellow-primary)" stroke-width="1.5" stroke-dasharray="6 6" class="rotating-ring" />
+          <circle cx="100" cy="100" r="55" stroke="var(--yellow-border)" stroke-width="1" class="pulsing-ring" />
+          <path d="M70 100 L130 100 M110 80 L130 100 L110 120" stroke="var(--yellow-primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+    </a>
+  </div>
+</section>
+
+  <!-- Services & Solutions Section -->
+  <section class="services-section" id="services">
+    <div class="container">
+      
+      <div class="section-header reveal-on-scroll">
+        <span class="section-subtitle">Services & Solutions</span>
+        <h2 class="section-title">Custom Websites & Web Apps Designed for Results</h2>
+        <p class="section-description">
+          Whether you need to boost your sales, showcase an educational institution, or establish a strong brand presence, I build fast, clean, and reliable web solutions.
+        </p>
+      </div>
+
+      <div class="services-grid">
+        
+        <!-- Service 1 -->
+        <div class="service-card reveal-on-scroll">
+          <div>
+            <div class="service-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12l-5 5"/><path d="M15 6l3 3"/></svg>
+            </div>
+            <h3 class="service-title">Marketing Websites</h3>
+            <p class="service-body">
+              High-impact landing pages designed to grab attention, explain your offerings clearly, and turn everyday visitors into paying customers.
+            </p>
+            <ul class="service-list">
+              <li>Conversion-focused design</li>
+              <li>Fast loading on mobile & desktop</li>
+              <li>Social media & messaging integration</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="service-card reveal-on-scroll">
+          <div>
+            <div class="service-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a1 1 0 0 0-1.196-.98l-10 2A1 1 0 0 0 6 5v14H4a1 1 0 1 0 0 2h16a1 1 0 1 0 0-2h-2V3zM10 7h4v2h-4V7zm0 4h4v2h-4v-2z"/></svg>
+            </div>
+            <h3 class="service-title">School & College Websites</h3>
+            <p class="service-body">
+              Organized, easy-to-navigate portals for schools, academies, and departments. Help students, parents, and staff find information instantly.
+            </p>
+            <ul class="service-list">
+              <li>Announcements & news feeds</li>
+              <li>Admissions & info sections</li>
+              <li>Clean, accessible layout</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="service-card reveal-on-scroll">
+          <div>
+            <div class="service-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="6" x2="9" y2="6.01"/><line x1="15" y1="6" x2="15" y2="6.01"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/><line x1="9" y1="14" x2="9" y2="14.01"/><line x1="15" y1="14" x2="15" y2="14.01"/><path d="M9 18h6v4H9z"/></svg>
+            </div>
+            <h3 class="service-title">Company & Business Websites</h3>
+            <p class="service-body">
+              Professional web representations for companies and startups. Build authority, build trust, and give your brand a modern, polished home online.
+            </p>
+            <ul class="service-list">
+              <li>Service listings & portfolios</li>
+              <li>Customer contact forms</li>
+              <li>Google search optimization ready</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Service 4 -->
+        <div class="service-card reveal-on-scroll">
+          <div>
+            <div class="service-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <h3 class="service-title">Custom Web Applications</h3>
+            <p class="service-body">
+              Tailored digital tools that do more than display information—interactive web apps built to solve specific workflow needs for your business or school.
+            </p>
+            <ul class="service-list">
+              <li>Works smoothly on smartphones</li>
+              <li>Custom dashboards & workflows</li>
+              <li>Reliable and secure setup</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Call To Action Banner -->
+      <div class="hire-banner reveal-on-scroll">
+        <div class="hire-text">
+          <h3>Have a project in mind?</h3>
+          <p>Let’s talk about your idea and build a website or web app that meets your exact needs.</p>
+        </div>
+        <div class="hire-actions">
+          <a href="mailto:craigmzumaraofficial@gmail.com?subject=Project%20Inquiry" class="btn-hire shimmer-effect">
+            <span>Hire Me Today</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  
+  <!-- Web Development Projects Section -->
+  <section class="projects-section" id="projects">
+    <div class="container">
+      
+      <div class="section-header reveal-on-scroll">
+        <span class="section-subtitle">MY PORTFOLIO</span>
+        <h2 class="section-title">Featured Web Projects</h2>
+        <p class="section-description">
+          A selection of websites and full-stack web applications I've built to solve real-world problems and streamline workflows.
+        </p>
+      </div>
+
+      <div class="web-projects-grid">
+        
+        <!-- Project 1: Domasi Hub -->
+        <div class="web-project-card reveal-on-scroll">
+          <div class="project-image">
+            <img src="uploads/domasi-1.jpg" alt="Domasi Hub Preview" id="domasi-preview-img" />
+            <button class="image-count-badge" id="open-domasi-gallery" aria-label="View project screenshots">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>3 Views</span>
+            </button>
+          </div>
+          <div class="project-content">
+            <div class="project-tags">
+              <span class="tag">Node.js</span>
+              <span class="tag">Express</span>
+              <span class="tag">PostgreSQL</span>
+            </div>
+            <h3 class="project-title">Domasi Hub</h3>
+            <p class="project-desc">
+              A specialized campus utility platform designed for student services, academic repository access, and seller uploads. Built from the ground up to streamline campus life and resource accessibility.
+            </p>
+            <div class="project-links">
+              <a href="https://domasihub.netlify.app" target="_blank" rel="noopener noreferrer" class="project-link shimmer-effect">
+                <span>Live Demo</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+              <a href="https://github.com/craigmzumara" target="_blank" rel="noopener noreferrer" class="project-link outline">
+                <span>GitHub</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual Arts & Photography Gallery Section -->
+  <section class="gallery-section" id="photography">
+    <div class="container">
+      
+      <div class="gallery-header reveal-on-scroll">
+        <span class="section-subtitle">VISUAL ARTS & AESTHETICS</span>
+        <h2 class="section-title">Mobile Photography & Color Grading</h2>
+        <p class="section-description">
+          Capturing raw atmosphere through a mobile lens, enhanced with custom color grading to give every photo depth, emotion, and tone.
+        </p>
+      </div>
+
+      <!-- Interactive Color Grading Comparison Slider -->
+      <div class="color-grade-feature reveal-on-scroll">
+        <div class="feature-header">
+          <div class="feature-title">
+            <h3>The Power of Color Grading</h3>
+            <p>Drag the slider to reveal the dramatic transformation.</p>
+          </div>
+          <span class="grade-tag">Interactive Lab</span>
+        </div>
+
+        <div class="image-compare-container" id="image-compare">
+          <!-- RAW Base Image -->
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&fm=webp&q=80" alt="Original Unedited Photo" class="compare-img raw-img" />
+          
+          <!-- GRADED Clipped Image -->
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&fm=webp&q=80" alt="Color Graded Photo" class="compare-img graded-img" />
+          
+          <!-- Slider Elements -->
+          <input type="range" min="0" max="100" value="50" class="compare-slider" id="compare-slider" aria-label="Color grade comparison slider">
+          <div class="slider-line" id="slider-line"></div>
+          <div class="slider-btn" id="slider-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-4 3 4 3"></path><path d="M16 9l4 3-4 3"></path><line x1="12" y1="5" x2="12" y2="19"></line></svg>
+          </div>
+          
+          <span class="compare-label label-raw">RAW</span>
+          <span class="compare-label label-graded">GRADED</span>
+        </div>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="gallery-grid">
+        <div class="gallery-card reveal-on-scroll">
+          <div class="card-image-wrap" tabindex="0" role="button" aria-label="Open image in fullscreen">
+            <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&fm=webp&q=80" data-element-id="photo-1" alt="Mountain Mist" />
+          </div>
+          <div class="card-info">
+            <h4 class="card-title">Mountain Mist</h4>
+            <div class="card-meta">
+              <span>Landscape & Mood</span>
+              <span class="badge-device">Mobile Shot</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-card reveal-on-scroll">
+          <div class="card-image-wrap" tabindex="0" role="button" aria-label="Open image in fullscreen">
+            <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&fm=webp&q=80" data-element-id="photo-2" alt="Urban Lights at Dusk" />
+          </div>
+          <div class="card-info">
+            <h4 class="card-title">Urban Lights at Dusk</h4>
+            <div class="card-meta">
+              <span>Street & Moody Tones</span>
+              <span class="badge-device">Graded</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-card reveal-on-scroll">
+          <div class="card-image-wrap" tabindex="0" role="button" aria-label="Open image in fullscreen">
+            <img src="https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=800&fm=webp&q=80" data-element-id="photo-3" alt="Golden Hour Horizon" />
+          </div>
+          <div class="card-info">
+            <h4 class="card-title">Golden Hour Horizon</h4>
+            <div class="card-meta">
+              <span>Sunset Colors</span>
+              <span class="badge-device">Mobile Shot</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section" id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        
+        <div class="contact-info reveal-on-scroll">
+          <span class="section-subtitle">GET IN TOUCH</span>
+          <h2 class="contact-title">Let’s Start a <span class="highlight">Conversation</span></h2>
+          
+          <p class="contact-description">
+            Whether you need a website built, have a project proposal, or simply want to chat, send a message through the form or reach out directly using the links below.
+          </p>
+
+          <div class="quick-links">
+            <a href="https://wa.me/265995389665" target="_blank" rel="noopener noreferrer" class="quick-card">
+              <div class="quick-icon whatsapp">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              </div>
+              <div class="quick-details">
+                <h4>Chat on WhatsApp</h4>
+                <p>+265 995 38 96 65</p>
+              </div>
+            </a>
+
+            <a href="mailto:craigmzumaraofficial@gmail.com" class="quick-card">
+              <div class="quick-icon email">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div class="quick-details">
+                <h4>Send an Email</h4>
+                <p>craigmzumaraofficial@gmail.com</p>
+              </div>
+            </a>
+          </div>
+
+          <div class="availability-note">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Based in Zomba, Malawi • Available for remote & local projects.</span>
+          </div>
+        </div>
+
+        <div class="contact-form-card reveal-on-scroll">
+          <form action="#" method="POST" id="contact-form">
+            <div class="form-group">
+              <label for="name" class="form-label">Your Name</label>
+              <input type="text" id="name" name="name" class="form-input" placeholder="e.g. John Banda" required />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-input" class="form-label">Email or WhatsApp Number</label>
+              <input type="text" id="contact-input" name="contact" class="form-input" placeholder="e.g. john@gmail.com or +265..." required />
+            </div>
+
+            <div class="form-group">
+              <label for="service-type" class="form-label">What do you need help with?</label>
+              <select id="service-type" name="service" class="form-select">
+                <option value="Marketing Website">Marketing Website</option>
+                <option value="School Website">School / College Website</option>
+                <option value="Company Website">Company / Business Website</option>
+                <option value="Custom Web App">Custom Web Application</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message" class="form-label">Tell me about your idea</label>
+              <textarea id="message" name="message" class="form-textarea" placeholder="Describe what you want your website to do..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit shimmer-effect">
+              <span>Send Message</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Website Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#home" class="footer-logo">
+            <div class="footer-logo-mark">CM</div>
+            <div class="footer-brand-name">CRAIG <span>MZUMARA</span></div>
+          </a>
+          <p class="footer-bio">
+            Student, Web Developer & Visual Creative. Crafting custom websites, web applications, and color-graded mobile photography from Malawi.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About Me</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#photography">Photography</a></li>
+            <li><a href="blog.html">Blog Feed</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Solutions</h4>
+          <ul class="footer-links">
+            <li><a href="#services">Marketing Websites</a></li>
+            <li><a href="#services">School Websites</a></li>
+            <li><a href="#services">Company Websites</a></li>
+            <li><a href="#services">Custom Web Apps</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Connect</h4>
+          <div class="social-pills">
+            <!-- GitHub Icon Pill -->
+            <a href="https://github.com/craigmzumara" target="_blank" rel="noopener noreferrer" class="social-pill">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                <path d="M9 18c-4.51 2-5-2-7-2"></path>
+              </svg>
+              <span>GitHub</span>
+            </a>
+
+            <!-- X (Twitter) Icon Pill -->
+            <a href="https://x.com/craigmzumara1" target="_blank" rel="noopener noreferrer" class="social-pill">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4l11.733 16h4.267l-11.733 -16z"/>
+                <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/>
+              </svg>
+              <span>X</span>
+            </a>
+
+            <!-- Instagram Icon Pill -->
+            <a href="https://instagram.com/craigmzumara1" target="_blank" rel="noopener noreferrer" class="social-pill">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              <span>Instagram</span>
+            </a>
+
+            <!-- Facebook Icon Pill -->
+            <a href="https://facebook.com/craigmzumara1" target="_blank" rel="noopener noreferrer" class="social-pill">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+              </svg>
+              <span>Facebook</span>
+            </a>
+
+            <!-- WhatsApp Icon Pill -->
+            <a href="https://wa.me/265995389665" target="_blank" rel="noopener noreferrer" class="social-pill">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+              <span>WhatsApp</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Craig Mzumara. All rights reserved.</p>
+        <a href="#home" class="back-to-top">
+          <span>Back to top</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal Overlay -->
+  <div id="lightbox" class="lightbox" aria-hidden="true" role="dialog">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close Lightbox">&times;</button>
+    <img id="lightbox-img" class="lightbox-content" src="" alt="Expanded Image View" />
+  </div>
+
+  <!-- Global Toast Notification -->
+  <div id="toast" class="toast" role="alert" aria-live="assertive">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    <span>Message sent successfully! I'll be in touch soon.</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
