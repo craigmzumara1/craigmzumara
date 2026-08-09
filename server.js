@@ -22,7 +22,7 @@ const supabase = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
   : null;
 
 const app = express();
-const upload = multer();
+const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -77,31 +77,29 @@ app.get('/api/images', async (req, res) => {
   }
 });
 
-app.post('/api/upload', upload.single('image'), async (req, res) => {
+app.post('/api/admin/upload-image', upload.single('image'), async (req, res) => {
   try {
-    const { element_id, title, subtitle, badge, tech_tags, live_demo_url, github_url } = req.body;
-    if (!element_id) {
-      return res.status(400).json({ success: false, error: 'element_id is required' });
-    }
+    const section = req.body.section || 'portfolio';
+    const element_id = req.body.element_id || `img-${Date.now()}`;
+    const title = req.body.title || null;
+    const subtitle = req.body.subtitle || null;
+    const badge = req.body.badge || null;
+    const tech_tags = req.body.tech_tags || null;
+    const live_demo_url = req.body.live_demo_url || null;
+    const github_url = req.body.github_url || null;
 
     let imageUrl = null;
     if (req.file) {
       imageUrl = await uploadImage(req.file);
     }
 
-    if (!imageUrl) {
-      const existing = await query('SELECT id FROM public.page_images WHERE element_id = $1', [element_id]);
-      if (existing.rows.length === 0) {
-        return res.status(400).json({ success: false, error: 'Image file is required for new entries' });
-      }
-    }
-
     const queryText = `
       INSERT INTO public.page_images
-        (element_id, title, subtitle, image_url, badge, tech_tags, live_demo_url, github_url)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        (section, element_id, title, subtitle, image_url, badge, tech_tags, live_demo_url, github_url)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       ON CONFLICT (element_id)
       DO UPDATE SET
+        section = EXCLUDED.section,
         title = EXCLUDED.title,
         subtitle = EXCLUDED.subtitle,
         image_url = COALESCE(EXCLUDED.image_url, public.page_images.image_url),
@@ -114,20 +112,21 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     `;
 
     const result = await query(queryText, [
+      section,
       element_id,
-      title || null,
-      subtitle || null,
-      imageUrl || null,
-      badge || null,
-      tech_tags || null,
-      live_demo_url || null,
-      github_url || null
+      title,
+      subtitle,
+      imageUrl,
+      badge,
+      tech_tags,
+      live_demo_url,
+      github_url
     ]);
 
     res.json({ success: true, data: result.rows[0] });
   } catch (err) {
-    console.error('Upload failed:', err);
-    res.status(500).json({ success: false, error: err.message || 'Upload failed' });
+    console.error('Admin upload failed:', err);
+    res.status(500).json({ success: false, error: err.message || 'Admin upload failed' });
   }
 });
 
