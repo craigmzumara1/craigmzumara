@@ -7,9 +7,10 @@ const { Pool } = require('pg');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const cors = require('cors');
 
 const PORT = process.env.PORT || 3000;
-const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
+const SERVER_URL = process.env.SERVER_URL || 'https://craigmzumara-production.up.railway.app';
 const publicDir = path.join(__dirname);
 const POST_TEMPLATE_PATH = path.join(__dirname, 'post.html');
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -36,6 +37,13 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://127.0.0.1:5500',
+    'https://craigmzumara.netlify.app'
+  ]
+}));
 
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth);
@@ -350,7 +358,7 @@ app.get(['/post/:postId', '/blog/:postId'], async (req, res) => {
     const postHtml = fs.readFileSync(POST_TEMPLATE_PATH, 'utf8')
       .replace(/%POST_TITLE%/g, escapeHtml(post.title || 'Blog Post'))
       .replace(/%POST_DESCRIPTION%/g, escapeHtml((post.content || '').substring(0, 150)))
-      .replace(/%POST_IMAGE%/g, escapeHtml(post.image_url || 'https://craigmzumara.onrender.com/og-default.png'))
+      .replace(/%POST_IMAGE%/g, escapeHtml(post.image_url || 'https://craigmzumara-production.up.railway.app/og-default.png'))
       .replace(/%POST_URL%/g, `${SERVER_URL}/post/${postId}`)
       .replace(/%POST_ID%/g, String(postId))
       .replace(/%POST_CONTENT%/g, escapeHtml(post.content || ''))
