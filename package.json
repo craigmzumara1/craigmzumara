@@ -4,5 +4,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.2",
+    "dotenv": "^17.4.2",
+    "multer": "^2.2.0",
+    "pg": "^8.23.0"
   }
 }

@@ -1,3 +1,5 @@
+require('dotenv').config();
+const { Pool } = require('pg');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -30,6 +32,26 @@ function sendFile(res, filePath) {
     res.writeHead(200, { 'Content-Type': getContentType(filePath) });
     res.end(content);
   });
+}
+
+// Setup Postgres connection using DATABASE_URL (if provided)
+const connectionString = process.env.DATABASE_URL;
+let pool = null;
+if (connectionString) {
+  pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
+  async function testDb() {
+    try {
+      const client = await pool.connect();
+      await client.query('SELECT 1');
+      client.release();
+      console.log('Database connected successfully');
+    } catch (err) {
+      console.error('Database connection error:', err.message || err);
+    }
+  }
+  testDb();
+} else {
+  console.log('No DATABASE_URL found in environment; DB disabled');
 }
 
 const server = http.createServer((req, res) => {
