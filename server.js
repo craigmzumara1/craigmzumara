@@ -37,13 +37,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://127.0.0.1:5500',
-    'https://craigmzumara.netlify.app'
-  ]
-}));
+
+// Allow requests from all frontend origins (Netlify, Localhost, etc.)
+app.use(cors({ origin: '*' }));
 
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth);
@@ -383,11 +379,11 @@ function escapeHtml(value) {
 }
 
 app.listen(PORT, () => {
-  console.log(`Server running at ${SERVER_URL}`);
+  console.log(`Server running on port ${PORT}`);
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing. Storage upload functionality will not work until these are set.');
+    console.warn('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.');
   }
   if (!process.env.DATABASE_URL) {
-    console.warn('DATABASE_URL is missing. Database functionality will not work until DATABASE_URL is set.');
+    console.warn('DATABASE_URL is missing.');
   }
 });
