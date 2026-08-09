@@ -40,7 +40,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth);
 
-app.use(express.static(publicDir));
+const staticSetHeaders = (res, filePath) => {
+  if (filePath.endsWith('.webp')) {
+    res.setHeader('Content-Type', 'image/webp');
+  }
+};
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { setHeaders: staticSetHeaders }));
+app.use(express.static(publicDir, { setHeaders: staticSetHeaders }));
 
 async function uploadImage(file) {
   if (!supabase) {

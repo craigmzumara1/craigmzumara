@@ -16,7 +16,7 @@
   <meta name="twitter:description" content="%POST_DESCRIPTION%" />
   <meta name="twitter:image" content="%POST_IMAGE%" />
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/style.css" />
   <style>
     .post-container {
       max-width: 860px;
@@ -230,19 +230,19 @@
   <header class="navbar-wrapper">
     <div class="container">
       <nav class="navbar">
-        <a href="index.html" class="brand-logo">
+        <a href="/index.html" class="brand-logo">
           <div class="logo-mark">CM</div>
           <div class="brand-name">CRAIG <span>MZUMARA</span></div>
         </a>
         <ul class="nav-links">
-          <li><a href="index.html#home" class="nav-link">Home</a></li>
-          <li><a href="index.html#about" class="nav-link">About</a></li>
-          <li><a href="index.html#projects" class="nav-link">Projects</a></li>
-          <li><a href="index.html#photography" class="nav-link">Photography</a></li>
-          <li><a href="blog.html" class="nav-link active">Blog Feed</a></li>
+          <li><a href="/index.html#home" class="nav-link">Home</a></li>
+          <li><a href="/index.html#about" class="nav-link">About</a></li>
+          <li><a href="/index.html#projects" class="nav-link">Projects</a></li>
+          <li><a href="/index.html#photography" class="nav-link">Photography</a></li>
+          <li><a href="/blog.html" class="nav-link active">Blog Feed</a></li>
         </ul>
         <div class="nav-actions">
-          <a href="blog.html" class="cta-btn-nav">Back to Feed</a>
+          <a href="/blog.html" class="cta-btn-nav">Back to Feed</a>
         </div>
       </nav>
     </div>
@@ -301,7 +301,7 @@
 
   <script>
     const POST_ID = %POST_ID%;
-    const API_BASE_URL = 'https://craigmzumara.onrender.com';
+    const API_BASE_URL = '';
 
     document.addEventListener('DOMContentLoaded', () => {
       const shareBtn = document.getElementById('share-btn');
@@ -364,7 +364,7 @@
     }
 
     function sharePost() {
-      const url = `${API_BASE_URL}/post/${POST_ID}`;
+      const url = `${window.location.origin}/post/${POST_ID}`;
       const title = document.title || 'Craig Mzumara Post';
       if (navigator.share) {
         navigator.share({ title, url }).catch(() => {});
