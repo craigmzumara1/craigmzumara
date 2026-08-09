@@ -1,5 +1,6 @@
 ﻿require('dotenv').config();
 const express = require('express');
+const basicAuth = require('express-basic-auth');
 const multer = require('multer');
 const { createClient } = require('@supabase/supabase-js');
 const { Pool } = require('pg');
@@ -12,6 +13,13 @@ const publicDir = path.join(__dirname);
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const SUPABASE_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'uploads';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '73102002mzebrao';
+
+const adminAuth = basicAuth({
+  users: { 'craigmzumara1': ADMIN_PASSWORD },
+  challenge: true,
+  unauthorizedResponse: req => req.auth ? 'Credentials rejected' : 'No credentials provided'
+});
 
 const pool = process.env.DATABASE_URL
   ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } })
@@ -26,6 +34,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/admin.html', adminAuth);
+app.use('/api/admin', adminAuth);
+
 app.use(express.static(publicDir));
 
 async function uploadImage(file) {

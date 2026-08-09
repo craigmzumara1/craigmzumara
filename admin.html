@@ -100,6 +100,7 @@
           <img id="prev-domasi-preview-img" src="uploads/domasi-1.jpg" alt="Preview" />
         </div>
         <form class="upload-form" data-element="domasi-preview-img">
+          <input type="hidden" name="element_id" value="domasi-preview-img" />
           <div class="form-group">
             <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
             <input type="text" name="title" class="form-input title-input" placeholder="Project Title" />
@@ -144,6 +145,7 @@
           <img id="prev-photo-1" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&fm=webp&q=80" alt="Preview" />
         </div>
         <form class="upload-form" data-element="photo-1">
+          <input type="hidden" name="element_id" value="photo-1" />
           <div class="form-group">
             <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
             <input type="text" name="title" class="form-input title-input" placeholder="e.g. Mountain Mist" />
@@ -172,6 +174,7 @@
           <img id="prev-photo-2" src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&fm=webp&q=80" alt="Preview" />
         </div>
         <form class="upload-form" data-element="photo-2">
+          <input type="hidden" name="element_id" value="photo-2" />
           <div class="form-group">
             <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
             <input type="text" name="title" class="form-input title-input" placeholder="e.g. Urban Lights at Dusk" />
@@ -200,6 +203,7 @@
           <img id="prev-photo-3" src="https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=800&fm=webp&q=80" alt="Preview" />
         </div>
         <form class="upload-form" data-element="photo-3">
+          <input type="hidden" name="element_id" value="photo-3" />
           <div class="form-group">
             <label class="form-label" style="font-size:0.8rem; color:var(--text-muted);">Title</label>
             <input type="text" name="title" class="form-input title-input" placeholder="e.g. Golden Hour Horizon" />
@@ -254,6 +258,10 @@
         });
       }
 
+      function getFallbackImageUrl() {
+        return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"%3E%3Crect width="800" height="600" fill="%23333"/%3E%3Ctext x="50%25" y="50%25" fill="%23fff" font-family="Arial, Helvetica, sans-serif" font-size="40" dominant-baseline="middle" text-anchor="middle"%3ENo+image+available%3C/text%3E%3C/svg%3E';
+      }
+
       const blogForm = document.getElementById("blog-publish-form");
       const toast = document.getElementById("toast");
 
@@ -295,10 +303,10 @@
           if (!Array.isArray(data)) return;
           data.forEach(item => {
             const previewImg = document.getElementById(`prev-${item.element_id}`);
-            if (previewImg && item.image_url) {
-              previewImg.src = item.image_url.startsWith('http') 
-                ? item.image_url 
-                : `${API_BASE_URL}/${item.image_url}`;
+            if (previewImg) {
+              previewImg.src = item.image_url
+                ? (item.image_url.startsWith('http') ? item.image_url : `${API_BASE_URL}/${item.image_url}`)
+                : getFallbackImageUrl();
             }
 
             const form = document.querySelector(`.upload-form[data-element="${item.element_id}"]`);

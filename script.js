@@ -170,4 +170,68 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   applySiteData();
+  loadPageImages();
 });
+
+function getFallbackImageUrl() {
+  return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"%3E%3Crect width="800" height="600" fill="%23333"/%3E%3Ctext x="50%25" y="50%25" fill="%23fff" font-family="Arial, Helvetica, sans-serif" font-size="40" dominant-baseline="middle" text-anchor="middle"%3ENo+image+available%3C/text%3E%3C/svg%3E';
+}
+
+async function loadPageImages() {
+  try {
+    const response = await fetch('/api/images');
+    const data = await response.json();
+    if (!Array.isArray(data)) return;
+
+    data.forEach(item => {
+      if (!item.element_id) return;
+      const imageUrl = item.image_url
+        ? (item.image_url.startsWith('http') ? item.image_url : `${window.location.origin}/${item.image_url}`)
+        : getFallbackImageUrl();
+
+      const imgEl = document.querySelector(`img[data-element-id="${item.element_id}"]`);
+      if (imgEl) {
+        imgEl.src = imageUrl;
+      }
+
+      const previewImg = document.getElementById(`prev-${item.element_id}`);
+      if (previewImg) {
+        previewImg.src = imageUrl;
+      }
+
+      if (item.element_id === 'domasi-preview-img') {
+        const projectImg = document.getElementById('domasi-preview-img');
+        if (projectImg) projectImg.src = imageUrl;
+
+        const projectTitle = document.querySelector('.web-project-card .project-title');
+        const projectDesc = document.querySelector('.web-project-card .project-desc');
+        const projectTags = document.querySelector('.web-project-card .project-tags');
+
+        if (projectTitle && item.title) projectTitle.textContent = item.title;
+        if (projectDesc && item.subtitle) projectDesc.textContent = item.subtitle;
+        if (projectTags && item.tech_tags) {
+          projectTags.innerHTML = item.tech_tags
+            .split(',')
+            .map(tag => tag.trim())
+            .filter(Boolean)
+            .map(tag => `<span class="tag">${tag}</span>`)
+            .join('');
+        }
+      }
+
+      const cardEl = imgEl?.closest('.gallery-card') || previewImg?.closest('.gallery-card');
+      if (cardEl) {
+        const titleEl = cardEl.querySelector('.card-title');
+        const subtitleEl = cardEl.querySelector('.card-meta span:first-child');
+        const badgeEl = cardEl.querySelector('.badge-device');
+
+        if (titleEl && item.title) titleEl.textContent = item.title;
+        if (subtitleEl && item.subtitle) subtitleEl.textContent = item.subtitle;
+        if (badgeEl && item.badge) badgeEl.textContent = item.badge;
+      }
+    });
+  } catch (err) {
+    console.error('Failed to load dynamic page images:', err);
+  }
+}
+
