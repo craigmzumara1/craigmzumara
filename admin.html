@@ -232,7 +232,9 @@
   </div>
 
   <script>
-    const API_BASE_URL = 'https://craigmzumara-production.up.railway.app';
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : 'https://craigmzumara-production.up.railway.app';
 
     document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll('.file-input').forEach(input => {

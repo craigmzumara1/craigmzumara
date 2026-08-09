@@ -300,10 +300,12 @@
   </div>
 
   <script>
-    const POST_ID = %POST_ID%;
-    const API_BASE_URL = '';
+    const POST_ID = "%POST_ID%"; 
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : 'https://craigmzumara-production.up.railway.app';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const shareBtn = document.getElementById('share-btn');
       const commentsSection = document.getElementById('post-comments-section');
       const commentForm = document.getElementById('post-comment-form');
