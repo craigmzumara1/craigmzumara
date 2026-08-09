@@ -353,8 +353,23 @@
         }
       });
 
+      await refreshPostStats();
       loadComments();
     });
+
+    async function refreshPostStats() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/blog/posts/${POST_ID}`);
+        if (!res.ok) return;
+        const post = await res.json();
+        const likeCountEl = document.getElementById('post-like-count');
+        const commentCountEl = document.getElementById('post-comment-count');
+        if (likeCountEl) likeCountEl.textContent = post.like_count != null ? post.like_count : '0';
+        if (commentCountEl) commentCountEl.textContent = post.comment_count != null ? post.comment_count : '0';
+      } catch (err) {
+        console.error('Failed to refresh post stats:', err);
+      }
+    }
 
     function showToast(message) {
       const toast = document.getElementById('toast');

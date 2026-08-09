@@ -35,3 +35,12 @@ CREATE TABLE public.blog_likes (
     session_id VARCHAR(255) NOT NULL,
     CONSTRAINT blog_likes_post_id_session_id_key UNIQUE (post_id, session_id)
 );
+
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  contact VARCHAR(255) NOT NULL,
+  service VARCHAR(255),
+  message TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

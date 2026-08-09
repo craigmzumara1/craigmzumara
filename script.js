@@ -125,11 +125,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const contactForm = document.getElementById('contact-form');
   const toast = document.getElementById('toast');
   if (contactForm) {
-    contactForm.addEventListener('submit', e => {
+    contactForm.addEventListener('submit', async e => {
       e.preventDefault();
-      if (toast) toast.classList.add('show');
-      contactForm.reset();
-      setTimeout(() => toast.classList.remove('show'), 4000);
+      if (!toast) return;
+
+      const formData = new FormData(contactForm);
+      const payload = {
+        name: formData.get('name'),
+        contact: formData.get('contact'),
+        service: formData.get('service'),
+        message: formData.get('message')
+      };
+
+      const requests = await Promise.allSettled([
+        fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        }),
+        fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+      ]);
+
+      const success = requests.some(result => result.status === 'fulfilled' && result.value && result.value.ok);
+
+      if (success) {
+        toast.textContent = 'Message sent successfully! I’ll be in touch soon.';
+        toast.classList.add('show');
+        contactForm.reset();
+        setTimeout(() => toast.classList.remove('show'), 4000);
+      } else {
+        toast.textContent = 'Unable to send message right now. Please try again or reach out directly.';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 6000);
+      }
     });
   }
 

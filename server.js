@@ -175,6 +175,25 @@ app.post('/api/blog/posts', upload.single('image'), async (req, res) => {
   }
 });
 
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, contact, service, message } = req.body;
+    if (!name || !contact || !message) {
+      return res.status(400).json({ success: false, error: 'name, contact, and message are required' });
+    }
+
+    const result = await query(
+      'INSERT INTO public.contact_messages (name, contact, service, message) VALUES ($1, $2, $3, $4) RETURNING *',
+      [name, contact, service || null, message]
+    );
+
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    console.error('Contact submission failed:', err);
+    res.status(500).json({ success: false, error: err.message || 'Failed to save contact message' });
+  }
+});
+
 app.get(['/api/blog/posts', '/api/posts', '/api/blog'], async (req, res) => {
   try {
     const result = await query(`
@@ -305,11 +324,11 @@ app.get(['/post/:postId', '/blog/:postId'], async (req, res) => {
     const result = await query(`
       SELECT
         p.*,
-        COALESCE(l.likes_count, 0) AS likes_count,
+        COALESCE(l.like_count, 0) AS like_count,
         COALESCE(c.comment_count, 0) AS comment_count
       FROM public.blog_posts p
       LEFT JOIN (
-        SELECT post_id, COUNT(*) AS likes_count
+        SELECT post_id, COUNT(*) AS like_count
         FROM public.blog_likes
         WHERE post_id = $1
         GROUP BY post_id
