@@ -134,26 +134,26 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       if (!toast) return;
 
-      const formData = new FormData(contactForm);
-      const payload = {
-        name: formData.get('name'),
-        contact: formData.get('contact'),
-        service: formData.get('service'),
-        message: formData.get('message')
-      };
+     const formData = new FormData(contactForm);
+formData.append('email', formData.get('contact')); // Adds 'email' key required by Web3Forms
 
-      const requests = await Promise.allSettled([
-        fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: formData
-        }),
-        fetch('${API_BASE_URL}/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-      ]);
-
+const payload = {
+  name: formData.get('name'),
+  contact: formData.get('contact'),
+  service: formData.get('service'),
+  message: formData.get('message')
+};
+     const requests = await Promise.allSettled([
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      }),
+      fetch(`${API_BASE_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+    ]);
       const success = requests.some(result => result.status === 'fulfilled' && result.value && result.value.ok);
 
       if (success) {
