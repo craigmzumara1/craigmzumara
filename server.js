@@ -15,8 +15,8 @@ const publicDir = path.join(__dirname);
 const POST_TEMPLATE_PATH = path.join(__dirname, 'post.html');
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const SUPABASE_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'uploads';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '73102002mzebrao';
+const SUPABASE_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 const adminAuth = basicAuth({
   users: { 'craigmzumara1': ADMIN_PASSWORD },

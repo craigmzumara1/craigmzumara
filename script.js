@@ -1,3 +1,8 @@
+// Point frontend fetch calls to your Railway backend
+const API_BASE_URL = window.location.hostname.includes('localhost') || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : 'https://craigmzumara-production.up.railway.app';
+
 const initialTheme = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', initialTheme);
 
@@ -142,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           body: formData
         }),
-        fetch('/api/contact', {
+        fetch('${API_BASE_URL}/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -210,7 +215,7 @@ function getFallbackImageUrl() {
 
 async function loadPageImages() {
   try {
-    const response = await fetch('/api/images');
+    const response = await fetch(`${API_BASE_URL}/api/images`);
     const data = await response.json();
     if (!Array.isArray(data)) return;
 

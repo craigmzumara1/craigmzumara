@@ -420,9 +420,7 @@
 
   <script src="/script.js"></script>
   <script>
-    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:3000'
-      : 'https://craigmzumara-production.up.railway.app';
+    
     let pendingCommentPostId = null;
 
     function getSessionId() {
@@ -530,7 +528,7 @@
 
             ${post.image_url ? `
               <div class="tweet-media">
-                <img src="${post.image_url}" alt="Post Image" loading="lazy" decoding="async" class="lazy-img" />
+                <img src="${post.image_url}" alt="Post Image" loading="lazy" decoding="async" class="lazy-img" onload="this.classList.add('loaded')" />
               </div>
             ` : ''}
 

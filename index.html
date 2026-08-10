@@ -135,7 +135,7 @@
         <!-- Modern Portrait Frame Inserted Above Paragraph -->
         <div class="hero-portrait-frame">
           <div class="portrait-wrapper">
-            <img src="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309710/image.jpg" alt="Craig Mzumara" class="portrait-img" loading="eager" decoding="async" />
+           <img src="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309710/image.jpg" alt="Craig Mzumara" class="portrait-img lazy-img" loading="eager" decoding="async" onload="this.classList.add('loaded')" />
             
             <!-- Modern Tech Overlays -->
             <div class="portrait-overlay"></div>
@@ -188,7 +188,16 @@
       <div class="profile-card float-animation reveal-on-scroll" id="about">
         <!-- Your Hero Image Added Here -->
         <div class="hero-image-container" style="text-align: center; margin-bottom: 20px;">
-          <img src="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png" alt="Craig Mzumara" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--yellow-primary);" />
+         <img 
+  src="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png" 
+  alt="Craig Mzumara" 
+  loading="eager" 
+  decoding="async" 
+  class="lazy-img" 
+  onload="this.classList.add('loaded')" 
+  onerror="this.onerror=null; this.src='/uploads/blue.png';" 
+  style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--yellow-primary);" 
+/>
         </div>
 
         <div class="card-heading">

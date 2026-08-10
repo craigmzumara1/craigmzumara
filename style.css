@@ -63,8 +63,8 @@ body {
 }
 
 img.lazy-img {
-  opacity: 0;
-  filter: blur(16px);
+  opacity: 1; /* Changed from 0 to 1 */
+  filter: blur(0); /* Removed the initial blur */
   transition: opacity 0.45s ease, filter 0.45s ease;
 }
 
