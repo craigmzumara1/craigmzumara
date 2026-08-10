@@ -140,10 +140,12 @@
     }
 
     .tweet-media img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+}
 
     .tweet-actions {
       display: flex;
@@ -548,7 +550,7 @@
                 <span>Share</span>
               </button>
 
-              <button class="action-btn" onclick="window.location='/post/${post.id}'">
+              <button class="action-btn" onclick="window.location='${API_BASE_URL}/post/${post.id}'">
                 <span>View Full Post</span>
               </button>
             </div>
@@ -599,7 +601,7 @@
     async function loadComments(postId) {
       const container = document.getElementById(`comments-list-${postId}`);
       try {
-      const res = await fetch(`/api/blog/posts/${postId}/comments`);
+      const res = await fetch(`${API_BASE_URL}/api/blog/posts/${postId}/comments`);
         const comments = await res.json();
         container.innerHTML = comments.map(c => `
           <div class="comment-item">
