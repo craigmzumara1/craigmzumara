@@ -73,7 +73,7 @@
           <li><a href="#services" class="nav-link">Services</a></li>
           <li><a href="#projects" class="nav-link">Projects</a></li>
           <li><a href="#photography" class="nav-link">Photography</a></li>
-          <li><a href="blog.html" class="nav-link nav-blog-pill">Blog Feed</a></li>
+          <li><a href="blog.html" class="nav-link nav-blog-pill">Blog</a></li>
         </ul>
 
         <div class="nav-actions">
@@ -116,7 +116,7 @@
         <li><a href="#services" class="mobile-link">Services</a></li>
         <li><a href="#projects" class="mobile-link">Projects</a></li>
         <li><a href="#photography" class="mobile-link">Photography</a></li>
-        <li><a href="blog.html" class="nav-link nav-blog-pill">Blog Feed</a></li>
+        <li><a href="blog.html" class="nav-link nav-blog-pill">Blog</a></li>
         <li><a href="#contact" class="mobile-link">Contact</a></li>
       </ul>
     </div>
@@ -127,6 +127,7 @@
     <div class="container hero-grid">
       
       <!-- Left Column: Story & Introduction -->
+       <canvas id="hero-canvas"></canvas>
       <div class="hero-content reveal-on-scroll">
         <div class="greeting-pill pulse-border">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -582,7 +583,7 @@
 
         <div class="contact-form-card reveal-on-scroll">
           <form action="#" method="POST" id="contact-form">
-            <input type="hidden" name="access_key" value="Cf7a4c43-431f-4461-9efe-627b2d41f612" />
+           <input type="hidden" name="access_key" value="cf7a4c43-431f-4461-9efe-627b2d41f612" />
             <input type="hidden" name="subject" value="New Portfolio Contact Form Submission" />
 
             <div class="form-group">
@@ -732,6 +733,122 @@
     <span>Message sent successfully! I'll be in touch soon.</span>
   </div>
 
+  <script>  document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  let particles = [];
+  
+  // Mouse position tracking
+  const mouse = { x: null, y: null, radius: 150 };
+
+  window.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+
+  window.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
+
+  function resize() {
+    width = canvas.width = canvas.parentElement.offsetWidth;
+    height = canvas.height = canvas.parentElement.offsetHeight;
+    initParticles();
+  }
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.vx = (Math.random() - 0.5) * 0.8;
+      this.vy = (Math.random() - 0.5) * 0.8;
+      this.radius = Math.random() * 2 + 1;
+    }
+
+    update() {
+      // Bounce off boundaries
+      if (this.x < 0 || this.x > width) this.vx *= -1;
+      if (this.y < 0 || this.y > height) this.vy *= -1;
+
+      this.x += this.vx;
+      this.y += this.vy;
+    }
+
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 215, 0, 0.7)'; // Accent gold/yellow color
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    particles = [];
+    const particleCount = Math.floor((width * height) / 12000); // Scaled to screen area
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function connectParticles() {
+    const maxDistance = 120;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < maxDistance) {
+          const alpha = 1 - dist / maxDistance;
+          ctx.strokeStyle = `rgba(255, 215, 0, ${alpha * 0.25})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+
+      // Connect to mouse cursor if within range
+      if (mouse.x !== null && mouse.y !== null) {
+        const mdx = particles[i].x - mouse.x;
+        const mdy = particles[i].y - mouse.y;
+        const mdist = Math.hypot(mdx, mdy);
+
+        if (mdist < mouse.radius) {
+          const mAlpha = 1 - mdist / mouse.radius;
+          ctx.strokeStyle = `rgba(255, 215, 0, ${mAlpha * 0.5})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach((particle) => {
+      particle.update();
+      particle.draw();
+    });
+    connectParticles();
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  animate();
+});
+
+       </script>
   <script src="script.js"></script>
 </body>
 </html>

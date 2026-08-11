@@ -1,9 +1,11 @@
 // Point frontend fetch calls to your Railway backend
-const API_BASE_URL = window.location.hostname.includes('localhost') || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:3000'
-  : 'https://craigmzumara-production.up.railway.app';
+window.API_BASE_URL = window.API_BASE_URL || (
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'https://craigmzumara-production.up.railway.app'
+);
 
-const initialTheme = localStorage.getItem('theme') || 'dark';
+var initialTheme = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', initialTheme);
 
 const SITE_STORAGE_KEY = 'craigMzumaraSiteData';
@@ -127,41 +129,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const contactForm = document.getElementById('contact-form');
+ const contactForm = document.getElementById('contact-form');
   const toast = document.getElementById('toast');
   if (contactForm) {
     contactForm.addEventListener('submit', async e => {
       e.preventDefault();
       if (!toast) return;
 
-     const formData = new FormData(contactForm);
-formData.append('email', formData.get('contact')); // Adds 'email' key required by Web3Forms
+      const formData = new FormData(contactForm);
+      
+      // Ensure Web3Forms required fields are set
+      formData.set('access_key', 'cf7a4c43-431f-4461-9efe-627b2d41f612');
+      formData.set('email', formData.get('contact'));
 
-const payload = {
-  name: formData.get('name'),
-  contact: formData.get('contact'),
-  service: formData.get('service'),
-  message: formData.get('message')
-};
-     const requests = await Promise.allSettled([
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData
-      }),
-      fetch(`${API_BASE_URL}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-    ]);
-      const success = requests.some(result => result.status === 'fulfilled' && result.value && result.value.ok);
+      const payload = {
+        name: formData.get('name'),
+        contact: formData.get('contact'),
+        service: formData.get('service'),
+        message: formData.get('message')
+      };
 
-      if (success) {
-        toast.textContent = 'Message sent successfully! I’ll be in touch soon.';
-        toast.classList.add('show');
-        contactForm.reset();
-        setTimeout(() => toast.classList.remove('show'), 4000);
-      } else {
+      try {
+        const [web3Res, dbRes] = await Promise.all([
+          fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+          }),
+          fetch(`${API_BASE_URL}/api/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+        ]);
+
+        if (web3Res.ok && dbRes.ok) {
+          toast.textContent = 'Message sent successfully! I’ll be in touch soon.';
+          toast.classList.add('show');
+          contactForm.reset();
+          setTimeout(() => toast.classList.remove('show'), 4000);
+        } else {
+          const web3Err = await web3Res.json().catch(() => ({}));
+          console.error('Web3Forms Error Response:', web3Err);
+          throw new Error('Web3Forms or DB submission failed');
+        }
+      } catch (err) {
+        console.error('Submission Error:', err);
         toast.textContent = 'Unable to send message right now. Please try again or reach out directly.';
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 6000);

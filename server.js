@@ -179,6 +179,31 @@ app.post('/api/blog/posts', upload.single('image'), async (req, res) => {
   }
 });
 
+// ==========================================
+// DELETE BLOG POST (ADMIN ROUTE)
+// ==========================================
+app.delete('/api/admin/blog/posts/:postId', adminAuth, async (req, res) => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+
+    // 1. Clean up associated likes and comments first
+    await query('DELETE FROM public.blog_likes WHERE post_id = $1', [postId]);
+    await query('DELETE FROM public.blog_comments WHERE post_id = $1', [postId]);
+
+    // 2. Delete the actual blog post
+    const result = await query('DELETE FROM public.blog_posts WHERE id = $1 RETURNING *', [postId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, error: 'Post not found' });
+    }
+
+    res.json({ success: true, message: 'Post deleted successfully' });
+  } catch (err) {
+    console.error('Failed to delete post:', err);
+    res.status(500).json({ success: false, error: err.message || 'Failed to delete post' });
+  }
+});
+
 app.post('/api/contact', async (req, res) => {
   try {
     const { name, contact, service, message } = req.body;
@@ -349,7 +374,7 @@ app.get(['/post/:postId', '/blog/:postId'], async (req, res) => {
     if (result.rowCount === 0) {
       return res.status(404).send('Post not found');
     }
-
+    
     const post = result.rows[0];
     const postHtml = fs.readFileSync(POST_TEMPLATE_PATH, 'utf8')
       .replace(/%POST_TITLE%/g, escapeHtml(post.title || 'Blog Post'))

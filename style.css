@@ -1583,7 +1583,7 @@ img.lazy-img.loaded {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 50px 48px;
+  padding: 140px 60px;
   background: var(--bg-card) url("https://res.cloudinary.com/v1nymi7j/image/upload/v1786309855/image_3.jpg") no-repeat center/cover;
   border-radius: var(--radius-md);
   border: 1px solid var(--blog-hero-border);
@@ -1604,16 +1604,26 @@ img.lazy-img.loaded {
 }
 
 .blog-hero-card::after {
-  content: "";
+  content: '';
   position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top left, rgba(255, 230, 0, 0.18), transparent 28%),
-              radial-gradient(circle at bottom right, rgba(255, 230, 0, 0.12), transparent 24%);
-  opacity: 0.9;
-  pointer-events: none;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  transform: skewX(-20deg);
+  transition: none;
+}
+
+.blog-hero-card:hover::after {
+  left: 150%;
+  transition: all 0.75s ease-in-out;
 }
 
 /* Hover Elevation & Accentuation */
+.blog-hero-card:hover::after {
+  left: 150%;
+  transition: all 0.75s ease-in-out;
+}
+
 .blog-hero-card:hover {
   transform: translateY(-6px) scale(1.005);
   border-color: var(--blog-hero-primary);
@@ -1776,4 +1786,91 @@ img.lazy-img.loaded {
 
   .blog-hero-title { font-size: 1.75rem; }
   .blog-hero-svg-graphic { display: none; }
+}
+
+/* ==========================================
+   ADMIN POSTS & DELETE BUTTON
+   ========================================== */
+.admin-posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-post-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+
+.admin-post-item .post-info h4 {
+  font-size: 1rem;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.admin-post-item .post-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.btn-delete-post {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-delete-post:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+/* ==========================================
+   BLOG POST COMMENT BUTTON
+   ========================================== */
+.post-comment-form .btn-send-comment {
+  align-self: flex-start;
+  padding: 12px 26px;
+  background-color: var(--yellow-primary);
+  color: var(--bg-black);
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 14px var(--yellow-glow);
+}
+
+.post-comment-form .btn-send-comment:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px var(--yellow-glow);
+}
+
+.post-comment-form .btn-send-comment:active {
+  transform: translateY(0);
+}
+
+
+#hero-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Kept behind cards and text */
+  pointer-events: none; /* Mouse events pass through to buttons/links */
+  opacity: 0.9;
 }

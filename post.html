@@ -3,33 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>%POST_TITLE% — Craig Mzumara</title>
+  <title id="page-title">Blog Post — Craig Mzumara</title>
 
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231c1c22'/><text x='50' y='65' font-family='sans-serif' font-size='45' font-weight='bold' fill='%23ffe600' text-anchor='middle'>CM</text></svg>">
 
-  <meta name="description" content="%POST_DESCRIPTION%" />
-  <meta property="og:title" content="%POST_TITLE%" />
-  <meta property="og:description" content="%POST_DESCRIPTION%" />
-  <meta property="og:image" content="%POST_IMAGE%" />
-  <meta property="og:url" content="%POST_URL%" />
+  <meta name="description" id="meta-description" content="Blog Post by Craig Mzumara" />
+  <meta property="og:title" id="og-title" content="Blog Post" />
+  <meta property="og:description" id="og-description" content="Blog Post by Craig Mzumara" />
+  <meta property="og:image" id="og-image" content="/og-default.png" />
   <meta property="og:type" content="article" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="%POST_TITLE%" />
-  <meta name="twitter:description" content="%POST_DESCRIPTION%" />
-  <meta name="twitter:image" content="%POST_IMAGE%" />
 
   <link rel="stylesheet" href="/style.css" />
 
   <!-- Prevent White Screen Flash on Load (Defaulting to Dark Theme) -->
-<script>
-  (function() {
-    const theme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
-  })();
-</script>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 
-<!-- Root-Relative Favicon Path -->
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Root-Relative Favicon Path -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
   <style>
     .post-container {
       max-width: 860px;
@@ -270,15 +267,15 @@
 
     <section class="post-hero">
       <div class="post-meta-row">
-        <span class="post-meta-pill">Posted on %POST_CREATED_AT%</span>
-        <span>Likes: <strong id="post-like-count">%POST_LIKE_COUNT%</strong></span>
-        <span>Comments: <strong id="post-comment-count">%POST_COMMENT_COUNT%</strong></span>
+        <span class="post-meta-pill" id="post-date">Loading date...</span>
+        <span>Likes: <strong id="post-like-count">0</strong></span>
+        <span>Comments: <strong id="post-comment-count">0</strong></span>
       </div>
-      <h1 class="post-title">%POST_TITLE%</h1>
-      <div class="post-image-wrap">
-        <img src="%POST_IMAGE%" alt="%POST_TITLE%" loading="lazy" decoding="async" class="loaded-image" />
+      <h1 class="post-title" id="post-title">Loading post...</h1>
+      <div class="post-image-wrap" id="post-image-container" style="display: none;">
+        <img id="post-image" src="" alt="" loading="lazy" decoding="async" class="loaded-image" />
       </div>
-      <div class="post-body">%POST_CONTENT%</div>
+      <div class="post-body" id="post-body">Fetching post details...</div>
       <div class="post-actions">
         <button id="share-btn">Share this post</button>
         <button id="toggle-comments-btn">Show Comments</button>
@@ -304,21 +301,24 @@
 
   <div id="toast" class="toast" role="alert">Link copied to clipboard!</div>
 
-  <div id="comment-modal" class="modal-overlay">
-    <div class="modal-card">
-      <h3 style="color: var(--yellow-primary);">Enter your name</h3>
-      <input id="comment-name-input" type="text" class="form-input" placeholder="Your name" />
-      <button id="comment-name-submit" class="btn-primary" style="width: 100%;">Save & Continue</button>
-    </div>
-  </div>
-
   <script>
-    const POST_ID = "%POST_ID%"; 
-    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:3000'
-      : 'https://craigmzumara-production.up.railway.app';
+    // Get post ID from URL parameter (e.g. /post.html?id=6)
+    const urlParams = new URLSearchParams(window.location.search);
+    const POST_ID = urlParams.get('id');
+
+    window.API_BASE_URL = window.API_BASE_URL || (
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'https://craigmzumara-production.up.railway.app'
+);
 
     document.addEventListener('DOMContentLoaded', async () => {
+      if (!POST_ID) {
+        document.getElementById('post-title').textContent = 'Post Not Found';
+        document.getElementById('post-body').textContent = 'No post ID provided in the URL.';
+        return;
+      }
+
       const shareBtn = document.getElementById('share-btn');
       const commentsSection = document.getElementById('post-comments-section');
       const commentForm = document.getElementById('post-comment-form');
@@ -328,15 +328,6 @@
 
       if (storedName) {
         authorInput.value = storedName;
-      }
-
-      const heroImage = document.querySelector('.post-image-wrap img.loaded-image');
-      if (heroImage) {
-        if (heroImage.complete) {
-          heroImage.classList.add('loaded');
-        } else {
-          heroImage.addEventListener('load', () => heroImage.classList.add('loaded'));
-        }
       }
 
       shareBtn.addEventListener('click', () => sharePost());
@@ -368,21 +359,48 @@
         }
       });
 
-      await refreshPostStats();
+      await loadPostData();
       loadComments();
     });
 
-    async function refreshPostStats() {
+    async function loadPostData() {
       try {
         const res = await fetch(`${API_BASE_URL}/api/blog/posts/${POST_ID}`);
-        if (!res.ok) return;
+        if (!res.ok) {
+          document.getElementById('post-title').textContent = 'Post Not Found';
+          document.getElementById('post-body').textContent = 'The requested blog post could not be loaded.';
+          return;
+        }
+
         const post = await res.json();
-        const likeCountEl = document.getElementById('post-like-count');
-        const commentCountEl = document.getElementById('post-comment-count');
-        if (likeCountEl) likeCountEl.textContent = post.like_count != null ? post.like_count : '0';
-        if (commentCountEl) commentCountEl.textContent = post.comment_count != null ? post.comment_count : '0';
+
+        // Update DOM Content
+        document.getElementById('post-title').textContent = post.title || 'Untitled Post';
+        document.getElementById('page-title').textContent = `${post.title || 'Blog Post'} — Craig Mzumara`;
+        document.getElementById('post-body').textContent = post.content || '';
+        document.getElementById('post-date').textContent = `Posted on ${new Date(post.created_at).toLocaleDateString()}`;
+        document.getElementById('post-like-count').textContent = post.like_count != null ? post.like_count : '0';
+        document.getElementById('post-comment-count').textContent = post.comment_count != null ? post.comment_count : '0';
+
+        // Handle Image loading
+        const imageContainer = document.getElementById('post-image-container');
+        const heroImage = document.getElementById('post-image');
+        if (post.image_url) {
+          heroImage.src = post.image_url;
+          heroImage.alt = post.title || 'Blog Image';
+          imageContainer.style.display = 'block';
+          if (heroImage.complete) {
+            heroImage.classList.add('loaded');
+          } else {
+            heroImage.addEventListener('load', () => heroImage.classList.add('loaded'));
+          }
+        } else {
+          imageContainer.style.display = 'none';
+        }
       } catch (err) {
-        console.error('Failed to refresh post stats:', err);
+        console.error('Failed to load post data:', err);
+        document.getElementById('post-title').textContent = 'Error Loading Post';
+        document.getElementById('post-body').textContent = 'Failed to connect to backend server.';
       }
     }
 
@@ -394,8 +412,8 @@
     }
 
     function sharePost() {
-      const url = `${window.location.origin}/post/${POST_ID}`;
-      const title = document.title || 'Craig Mzumara Post';
+      const url = `${window.location.origin}/post.html?id=${POST_ID}`;
+      const title = document.getElementById('post-title').textContent || 'Craig Mzumara Post';
       if (navigator.share) {
         navigator.share({ title, url }).catch(() => {});
         return;

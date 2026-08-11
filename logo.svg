@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" width="100%" height="100%">
+  <!-- Left Icon Container -->
+  <g transform="translate(0, 0)">
+    <!-- Dark Box with Yellow Outline -->
+    <rect 
+      x="2" 
+      y="2" 
+      width="56" 
+      height="56" 
+      rx="12" 
+      fill="#1c1d22" 
+      stroke="#ffe600" 
+      stroke-width="2" />
+    
+    <!-- "CM" Text Inside Icon -->
+    <text 
+      x="30" 
+      y="39" 
+      font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+      font-size="24" 
+      font-weight="900" 
+      fill="#ffe600" 
+      text-anchor="middle"
+      letter-spacing="-0.5">CM</text>
+  </g>
+
+  <!-- Right Text: Name with Tight Spacing -->
+  <g transform="translate(74, 38)">
+    <!-- White CRAIG -->
+    <text 
+      x="0" 
+      y="0" 
+      font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+      font-size="22" 
+      font-weight="900" 
+      fill="#ffffff" 
+      letter-spacing="0.5">CRAIG</text>
+    
+    <!-- Yellow MZUMARA (x adjusted from 88 to 78) -->
+    <text 
+      x="78" 
+      y="0" 
+      font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+      font-size="22" 
+      font-weight="900" 
+      fill="#ffe600" 
+      letter-spacing="0.5">MZUMARA</text>
+  </g>
+</svg>
