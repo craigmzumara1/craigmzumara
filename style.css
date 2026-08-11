@@ -209,12 +209,16 @@ img.lazy-img.loaded {
   align-items: center;
   justify-content: center;
   transition: var(--transition);
+  touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.theme-toggle-btn:hover {
-  border-color: var(--yellow-primary);
-  color: var(--yellow-primary);
-  transform: rotate(15deg);
+.theme-toggle-btn.is-active
+.theme-toggle-btn:hover,
+.theme-toggle-btn:active {
+    border-color: var(--yellow-primary);
+    color: var(--yellow-primary);
+    transform: rotate(15deg);
 }
 
 [data-theme="dark"] .sun-icon { display: block; }
