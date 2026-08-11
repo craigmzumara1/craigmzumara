@@ -660,7 +660,7 @@
     });
 
     function sharePost(postId) {
-      const url = `${window.location.origin}/post.html?id=${postId}`;
+     const url = `${API_BASE_URL}/post/${postId}`;
       const title = document.querySelector(`article[data-post-id='${postId}'] .tweet-title`)?.textContent || 'Craig Mzumara Post';
       if (navigator.share) {
         navigator.share({

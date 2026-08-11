@@ -238,7 +238,9 @@ img.lazy-img.loaded {
   transition: var(--transition);
 }
 
-.cta-btn-nav:hover {
+.cta-btn-nav.is-active,
+.cta-btn-nav:hover,
+.cta-btn-nav:active {
   background: var(--yellow-primary);
   color: var(--bg-black);
 }
