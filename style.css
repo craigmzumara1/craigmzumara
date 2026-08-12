@@ -238,19 +238,37 @@ img.lazy-img.loaded {
   transition: var(--transition);
 }
 
-.cta-btn-nav.is-active,
-.cta-btn-nav:hover,
-.cta-btn-nav:active {
+.cta-btn-nav:hover {
   background: var(--yellow-primary);
   color: var(--bg-black);
 }
 
 .mobile-menu-btn {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--text-main);
-  cursor: pointer;
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    
+    /* Remove mobile touch artifacts */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+    
+    /* Smooth transition for touch states */
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 8px;
+}
+
+/* Hover state for desktop viewports */
+.mobile-menu-btn:hover {
+    color: var(--yellow-primary);
+}
+
+/* Active tap feedback for mobile touch screens */
+.mobile-menu-btn:active {
+    color: var(--yellow-primary);
+    transform: scale(0.92);
 }
 
 .mobile-menu-btn .menu-close-icon { display: none; }
@@ -276,13 +294,70 @@ img.lazy-img.loaded {
   gap: 16px;
 }
 
-.mobile-link {
+/* Ensure all mobile drawer links scale/grow on hover or active tap */
+.mobile-nav-links .mobile-link,
+.mobile-nav-links .nav-link {
+  display: block;
   color: var(--text-main);
   text-decoration: none;
   font-size: 1.05rem;
   font-weight: 600;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease, background-color 0.2s ease;
+  transform-origin: left center;
 }
 
+/* Hover and active states to trigger scale grow effect */
+.mobile-nav-links .mobile-link:hover,
+.mobile-nav-links .nav-link:hover,
+.mobile-nav-links .mobile-link:active,
+.mobile-nav-links .nav-link:active {
+  color: var(--yellow-primary);
+  transform: scale(1.05);
+  background: var(--yellow-glow);
+}
+
+/* Standardize Desktop Navbar Navigation Links & Blog Pill */
+.nav-link.nav-blog-pill {
+  color: var(--yellow-primary);
+  border: 1px solid var(--yellow-border);
+  background: var(--yellow-glow);
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+.nav-link.nav-blog-pill:hover {
+  background: var(--yellow-primary);
+  color: var(--bg-black);
+}
+
+/* Active state for Desktop Navigation Links */
+.nav-link.active {
+  color: var(--yellow-primary);
+  font-weight: 700;
+  position: relative;
+}
+
+/* Optional active indicator bar under desktop links */
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--yellow-primary);
+  border-radius: 2px;
+}
+
+/* Active state for Mobile Navigation Links */
+.mobile-nav-links .mobile-link.active {
+  color: var(--yellow-primary);
+  background: var(--yellow-glow);
+  font-weight: 700;
+}
 /* ==========================================================================
    4. HERO & FLOATING ANIMATION
    ========================================================================== */

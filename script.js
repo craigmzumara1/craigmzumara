@@ -302,3 +302,48 @@ async function loadPageImages() {
   }
 }
 
+// Active Link & ScrollSpy Handler
+document.addEventListener('DOMContentLoaded', () => {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link, .mobile-link');
+  
+  // Get current file name (defaults to index.html if root path)
+  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+
+  // 1. If currently on blog.html, highlight Blog link only
+  if (currentPath === 'blog.html') {
+    navLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href.includes('blog.html')) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+    return; // Exit so section scroll detection doesn't run on blog page
+  }
+
+  // 2. ScrollSpy logic for index.html sections
+  function highlightNavOnScroll() {
+    const scrollPosition = window.scrollY + 200; // Offset for navbar height
+
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const sectionId = section.getAttribute('id');
+
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          const href = link.getAttribute('href');
+          if (href && (href.endsWith(`#${sectionId}`) || href === `#${sectionId}`)) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }
+
+  window.addEventListener('scroll', highlightNavOnScroll);
+  highlightNavOnScroll(); // Run immediately on page load
+});
