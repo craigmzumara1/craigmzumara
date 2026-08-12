@@ -32,4 +32,6 @@ I am currently a student studying Mathematics and Computer Science, channeling m
 *   **GitHub:** [craigmzumara](https://github.com/craigmzumara1)
 *   **Website:** [craigmzumara.netlify.app](https://craigmzumara.netlify.app/)
 
+*   [![Netlify Status](https://api.netlify.com/api/v1/badges/c3d24ebd-99c2-42f4-99ae-ed7d26948a7a/deploy-status)](https://app.netlify.com/projects/craigmzumara/deploys)
+
 ---
