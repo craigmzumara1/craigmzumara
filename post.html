@@ -421,7 +421,7 @@
     }
 
    function sharePost() {
-  const url = `${API_BASE_URL}/post/${POST_ID}`;
+  const url = `${window.location.origin}/post/${POST_ID}`;
   const title = document.getElementById('post-title').textContent || 'Craig Mzumara Post';
   
   if (navigator.share) {
