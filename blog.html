@@ -562,7 +562,7 @@
               </div>
             </div>
 
-            ${post.title ? `<div class="tweet-title"><a href="/post.html?id=${post.id}" class="post-link">${escapeHtml(post.title)}</a></div>` : ''}
+           ${post.title ? `<div class="tweet-title"><a href="/post/${post.id}" class="post-link">${escapeHtml(post.title)}</a></div>` : ''}
             ${renderPostContent(post)}
 
             ${post.image_url ? `

@@ -311,9 +311,9 @@
   <div id="toast" class="toast" role="alert">Link copied to clipboard!</div>
 
   <script>
-    // Get post ID from URL parameter (e.g. /post.html?id=6)
-    const urlParams = new URLSearchParams(window.location.search);
-    const POST_ID = urlParams.get('id');
+   // Get post ID from URL parameter (e.g. /post.html?id=6) OR server template (%POST_ID%)
+const urlParams = new URLSearchParams(window.location.search);
+const POST_ID = urlParams.get('id') || '%POST_ID%';
 
     window.API_BASE_URL = window.API_BASE_URL || (
   window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
