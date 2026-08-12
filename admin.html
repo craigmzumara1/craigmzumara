@@ -420,26 +420,56 @@
   }
 
   async function deleteBlogPost(postId) {
-    if (!confirm('Are you sure you want to delete this blog post?')) return;
+  if (!confirm('Are you sure you want to delete this blog post?')) return;
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/blog/posts/${postId}`, {
-        method: 'DELETE'
-      });
-      const result = await res.json();
+  try {
+    // Attempt standard fetch with credentials
+    let res = await fetch(`${API_BASE_URL}/api/admin/blog/posts/${postId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
 
-      if (result.success) {
-        const el = document.getElementById(`admin-post-${postId}`);
-        if (el) el.remove();
-        alert('Post deleted successfully');
-      } else {
-        alert(`Error: ${result.error}`);
+    // If HTTP Basic Auth is missing cross-origin, prompt for password
+    if (res.status === 401) {
+      const username = prompt('Enter Admin Username:', 'craigmzumara1');
+      const password = prompt('Enter Admin Password:');
+
+      if (!username || !password) {
+        alert('Authentication cancelled.');
+        return;
       }
-    } catch (err) {
-      console.error('Failed to delete post:', err);
-      alert('An error occurred while attempting to delete the post.');
+
+      const basicAuthHeader = 'Basic ' + btoa(`${username}:${password}`);
+
+      res = await fetch(`${API_BASE_URL}/api/admin/blog/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': basicAuthHeader
+        },
+        credentials: 'include'
+      });
     }
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      alert(`Error ${res.status}: ${errorText || 'Failed to delete post'}`);
+      return;
+    }
+
+    const result = await res.json();
+
+    if (result.success) {
+      const el = document.getElementById(`admin-post-${postId}`);
+      if (el) el.remove();
+      alert('Post deleted successfully');
+    } else {
+      alert(`Error: ${result.error}`);
+    }
+  } catch (err) {
+    console.error('Failed to delete post:', err);
+    alert('An error occurred while attempting to delete the post.');
   }
+}
 
   function escapeHtml(text) {
     const div = document.createElement('div');
