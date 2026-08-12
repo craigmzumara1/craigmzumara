@@ -33,4 +33,3 @@ I am currently a student studying Mathematics and Computer Science, channeling m
 *   **Website:** [craigmzumara.netlify.app](https://craigmzumara.netlify.app/)
 
 ---
-*Built with ❤️ in Zomba, Malawi.*
