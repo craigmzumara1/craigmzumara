@@ -290,6 +290,7 @@
           try {
             const res = await fetch(`${API_BASE_URL}/api/blog/posts`, {
               method: "POST",
+              credentials: 'include',
               body: formData
             });
             const result = await res.json();
@@ -368,6 +369,7 @@
           try {
             const res = await fetch(`${API_BASE_URL}/api/admin/upload-image`, {
               method: "POST",
+              credentials: 'include',
               body: formData
             });
 

@@ -55,7 +55,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Allow requests from all frontend origins (Netlify, Localhost, etc.)
-app.use(cors({ origin: '*' }));
+app.use(cors({
+  origin: ['https://craigmzumara.netlify.app', 'http://localhost:3000'],
+  credentials: true
+}));
 
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth);
