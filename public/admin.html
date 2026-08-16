@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Portfolio Content Admin Dashboard</title>
+
+  <link
+    rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231c1c22'/><text x='50' y='65' font-family='sans-serif' font-size='45' font-weight='bold' fill='%23ffe600' text-anchor='middle'>CM</text></svg>"
+  >
+
+  <script>
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  </script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    .admin-container {
+      padding: 40px 0;
+    }
+
+    .admin-header {
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+    }
+
+    .admin-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .admin-card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--yellow-primary);
+    }
+
+    .preview-box {
+      width: 100%;
+      height: 200px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-color);
+      position: relative;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .btn-select {
+      display: block;
+      text-align: center;
+      width: 100%;
+      padding: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .btn-select:hover {
+      border-color: var(--yellow-primary);
+    }
+
+    .btn-save {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .form-input:focus {
+      border-color: var(--yellow-primary);
+      outline: none;
+    }
+
+    /* Blog CMS */
+    .blog-cms-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .blog-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .blog-content-input {
+      min-height: 260px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .blog-excerpt-input {
+      min-height: 90px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .blog-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .blog-option-card {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .blog-option-card:hover {
+      border-color: var(--yellow-primary);
+    }
+
+    .blog-option-card input {
+      accent-color: var(--yellow-primary);
+    }
+
+    .blog-tags-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      padding: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-height: 190px;
+      overflow-y: auto;
+    }
+
+    .blog-tag-option {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .blog-tag-option:hover {
+      background: var(--bg-card);
+    }
+
+    .blog-tag-option input {
+      accent-color: var(--yellow-primary);
+    }
+
+    .blog-image-preview {
+      display: none;
+      margin-top: 8px;
+    }
+
+    .blog-image-preview .preview-box {
+      height: 220px;
+    }
+
+    .blog-submit-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .blog-submit-row button {
+      margin-top: 0;
+    }
+
+    .admin-posts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .admin-post-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+
+    .post-info {
+      min-width: 0;
+    }
+
+    .post-info h4 {
+      margin: 0 0 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .post-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .post-status {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-delete-post {
+      flex-shrink: 0;
+      padding: 8px 12px;
+      border: 1px solid #ff5555;
+      background: transparent;
+      color: #ff5555;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .btn-delete-post:hover {
+      background: #ff5555;
+      color: #fff;
+    }
+
+    @media (max-width: 600px) {
+      .admin-container {
+        padding: 25px 0;
+      }
+
+      .admin-card {
+        padding: 18px;
+      }
+
+      .blog-submit-row {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-post-item {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .btn-delete-post {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================================================
+       NAVIGATION
+  ========================================================== -->
+
+  <header class="navbar-wrapper">
+    <div class="container">
+
+      <nav class="navbar">
+
+        <a href="index.html" class="brand-logo">
+          <div class="logo-mark">CM</div>
+
+          <div class="brand-name">
+            ADMIN <span>PANEL</span>
+          </div>
+        </a>
+
+        <div class="nav-actions">
+
+          <button
+            id="admin-theme-toggle"
+            class="theme-toggle-btn"
+            aria-label="Toggle theme"
+            type="button"
+          >
+
+            <svg
+              class="sun-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+
+            <svg
+              class="moon-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+
+          </button>
+
+          <a href="index.html" class="cta-btn-nav">
+            Back to Site
+          </a>
+
+        </div>
+
+      </nav>
+
+    </div>
+  </header>
+
+
+  <!-- =========================================================
+       MAIN
+  ========================================================== -->
+
+  <main class="container admin-container">
+
+    <div class="admin-header">
+
+      <h1 class="section-title">
+        Website & Blog Content Dashboard
+      </h1>
+
+      <p class="section-description">
+        Manage your blog, projects and photography content from one place.
+      </p>
+
+    </div>
+
+
+    <!-- =======================================================
+         BLOG CMS
+    ======================================================== -->
+
+    <h2
+      class="section-subtitle"
+      style="margin-bottom: 20px;"
+    >
+      Publish New Blog Post
+    </h2>
+
+    <div
+      class="admin-card"
+      style="margin-bottom: 40px;"
+    >
+
+      <span class="badge-yellow">
+        Blog CMS
+      </span>
+
+
+      <form
+        id="blog-publish-form"
+        class="blog-cms-form"
+      >
+
+        <!-- TITLE -->
+
+        <div class="form-group">
+
+          <label
+            class="blog-label"
+            for="blog-title"
+          >
+            Title
+          </label>
+
+          <input
+            type="text"
+            id="blog-title"
+            class="form-input"
+            placeholder="e.g. How I Built My First Web Application"
+            maxlength="200"
+            required
+          />
+
+        </div>
+
+
+        <!-- EXCERPT -->
+
+        <div class="form-group">
+
+          <label
+            class="blog-label"
+            for="blog-excerpt"
+          >
+            Excerpt
+          </label>
+
+          <textarea
+            id="blog-excerpt"
+            class="form-input blog-excerpt-input"
+            placeholder="A short description of your article..."
+            maxlength="300"
+          ></textarea>
+
+        </div>
+
+
+        <!-- CATEGORY -->
+
+        <div class="form-group">
+
+          <label
+            class="blog-label"
+            for="blog-category"
+          >
+            Category
+          </label>
+
+          <select
+            id="blog-category"
+            class="form-input"
+          >
+            <option value="">
+              Select category
+            </option>
+          </select>
+
+        </div>
+
+
+        <!-- TAGS -->
+
+        <div class="form-group">
+
+          <label class="blog-label">
+            Tags
+          </label>
+
+          <div
+            id="blog-tags-container"
+            class="blog-tags-box"
+          >
+            <span style="color: var(--text-muted); font-size: 0.85rem;">
+              Loading tags...
+            </span>
+          </div>
+
+        </div>
+
+
+        <!-- CONTENT -->
+
+        <div class="form-group">
+
+          <label
+            class="blog-label"
+            for="blog-content"
+          >
+            Article Content
+          </label>
+
+          <textarea
+            id="blog-content"
+            class="form-input blog-content-input"
+            placeholder="Write your article here..."
+            required
+          ></textarea>
+
+        </div>
+
+
+        <!-- COVER IMAGE -->
+
+        <div class="form-group">
+
+          <label
+            class="btn-select"
+            for="file-blog-image"
+          >
+            📸 Choose Cover Image
+          </label>
+
+          <input
+            type="file"
+            id="file-blog-image"
+            class="file-input"
+            accept="image/*"
+          />
+
+        </div>
+
+
+        <!-- IMAGE PREVIEW -->
+
+        <div
+          id="blog-image-preview-container"
+          class="blog-image-preview"
+        >
+
+          <div class="preview-box">
+
+            <img
+              id="blog-image-preview"
+              src=""
+              alt="Blog cover preview"
+            />
+
+          </div>
+
+        </div>
+
+
+        <!-- OPTIONS -->
+
+        <div class="blog-options">
+
+          <label class="blog-option-card">
+
+            <input
+              type="checkbox"
+              id="blog-featured"
+            />
+
+            <span>
+              ⭐ Featured post
+            </span>
+
+          </label>
+
+
+          <div class="form-group">
+
+            <label
+              class="blog-label"
+              for="blog-status"
+            >
+              Publishing Status
+            </label>
+
+            <select
+              id="blog-status"
+              class="form-input"
+            >
+
+              <option value="published">
+                Publish immediately
+              </option>
+
+              <option value="draft">
+                Save as draft
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <div class="blog-submit-row">
+
+          <button
+            type="submit"
+            id="blog-submit-button"
+            class="btn-submit shimmer-effect btn-save"
+          >
+            <span id="blog-submit-text">
+              Publish Post
+            </span>
+          </button>
+
+          <button
+            type="button"
+            id="blog-reset-button"
+            class="btn-select"
+            style="margin-top: 10px;"
+          >
+            Clear Form
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+
+    <!-- =======================================================
+         MANAGE BLOG POSTS
+    ======================================================== -->
+
+    <div
+      class="admin-card"
+      style="margin-bottom: 40px;"
+    >
+
+      <h3>
+        Manage Blog Posts
+      </h3>
+
+      <div
+        id="admin-posts-list"
+        class="admin-posts-list"
+      ></div>
+
+    </div>
+
+
+    <!-- =======================================================
+         PROJECTS
+    ======================================================== -->
+
+    <h2
+      class="section-subtitle"
+      style="margin-bottom: 20px;"
+    >
+      Featured Projects Section
+    </h2>
+
+    <div
+      class="admin-grid"
+      style="margin-bottom: 40px;"
+    >
+
+      <!-- DOMASI HUB -->
+
+      <div class="admin-card">
+
+        <span class="badge-yellow">
+          Project Card
+        </span>
+
+        <h3 class="admin-card-title">
+          Domasi Hub Preview
+        </h3>
+
+        <div class="preview-box">
+
+          <img
+            id="prev-domasi-preview-img"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E"
+            alt="Preview"
+          />
+
+        </div>
+
+        <form
+          class="upload-form"
+          data-element="domasi-preview-img"
+        >
+
+          <input
+            type="hidden"
+            name="element_id"
+            value="domasi-preview-img"
+          />
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Title
+            </label>
+
+            <input
+              type="text"
+              name="title"
+              class="form-input title-input"
+              placeholder="Project Title"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Subtitle / Description
+            </label>
+
+            <input
+              type="text"
+              name="subtitle"
+              class="form-input subtitle-input"
+              placeholder="Project Subtitle"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Tech Stack Tags (Comma separated)
+            </label>
+
+            <input
+              type="text"
+              name="tech_tags"
+              class="form-input tech-tags-input"
+              placeholder="Node.js, Express, PostgreSQL"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Live Demo URL
+            </label>
+
+            <input
+              type="url"
+              name="live_demo_url"
+              class="form-input demo-url-input"
+              placeholder="https://domasihub.netlify.app"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              GitHub Repository URL
+            </label>
+
+            <input
+              type="url"
+              name="github_url"
+              class="form-input github-url-input"
+              placeholder="https://github.com/craigmzumara"
+            />
+
+          </div>
+
+
+          <label
+            class="btn-select"
+            for="file-domasi"
+          >
+            Choose New Image (Optional)
+          </label>
+
+          <input
+            type="file"
+            id="file-domasi"
+            class="file-input"
+            accept="image/*"
+            data-target-img="prev-domasi-preview-img"
+          />
+
+          <button
+            type="submit"
+            class="btn-submit shimmer-effect btn-save"
+          >
+            <span>
+              Save Changes
+            </span>
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================================
+         PHOTOGRAPHY
+    ======================================================== -->
+
+    <h2
+      class="section-subtitle"
+      style="margin-bottom: 20px;"
+    >
+      Photography Gallery Section
+    </h2>
+
+    <div class="admin-grid">
+
+
+      <!-- PHOTO 1 -->
+
+      <div class="admin-card">
+
+        <span class="badge-yellow">
+          Photography Card 1
+        </span>
+
+        <h3 class="admin-card-title">
+          Photo Slot 1
+        </h3>
+
+        <div class="preview-box">
+
+          <img
+            id="prev-photo-1"
+            src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&fm=webp&q=80"
+            alt="Preview"
+          />
+
+        </div>
+
+        <form
+          class="upload-form"
+          data-element="photo-1"
+        >
+
+          <input
+            type="hidden"
+            name="element_id"
+            value="photo-1"
+          />
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Title
+            </label>
+
+            <input
+              type="text"
+              name="title"
+              class="form-input title-input"
+              placeholder="e.g. Mountain Mist"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Subtitle
+            </label>
+
+            <input
+              type="text"
+              name="subtitle"
+              class="form-input subtitle-input"
+              placeholder="e.g. Landscape & Mood"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Badge Tag
+            </label>
+
+            <input
+              type="text"
+              name="badge"
+              class="form-input badge-input"
+              placeholder="e.g. Mobile Shot / Graded"
+            />
+
+          </div>
+
+
+          <label
+            class="btn-select"
+            for="file-photo-1"
+          >
+            Choose New Image (Optional)
+          </label>
+
+          <input
+            type="file"
+            id="file-photo-1"
+            class="file-input"
+            accept="image/*"
+            data-target-img="prev-photo-1"
+          />
+
+          <button
+            type="submit"
+            class="btn-submit shimmer-effect btn-save"
+          >
+            <span>
+              Save Changes
+            </span>
+          </button>
+
+        </form>
+
+      </div>
+
+
+      <!-- PHOTO 2 -->
+
+      <div class="admin-card">
+
+        <span class="badge-yellow">
+          Photography Card 2
+        </span>
+
+        <h3 class="admin-card-title">
+          Photo Slot 2
+        </h3>
+
+        <div class="preview-box">
+
+          <img
+            id="prev-photo-2"
+            src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&fm=webp&q=80"
+            alt="Preview"
+          />
+
+        </div>
+
+        <form
+          class="upload-form"
+          data-element="photo-2"
+        >
+
+          <input
+            type="hidden"
+            name="element_id"
+            value="photo-2"
+          />
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Title
+            </label>
+
+            <input
+              type="text"
+              name="title"
+              class="form-input title-input"
+              placeholder="e.g. Urban Lights at Dusk"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Subtitle
+            </label>
+
+            <input
+              type="text"
+              name="subtitle"
+              class="form-input subtitle-input"
+              placeholder="e.g. Street Photography"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Badge Tag
+            </label>
+
+            <input
+              type="text"
+              name="badge"
+              class="form-input badge-input"
+              placeholder="e.g. Mobile Shot / Graded"
+            />
+
+          </div>
+
+
+          <label
+            class="btn-select"
+            for="file-photo-2"
+          >
+            Choose New Image (Optional)
+          </label>
+
+          <input
+            type="file"
+            id="file-photo-2"
+            class="file-input"
+            accept="image/*"
+            data-target-img="prev-photo-2"
+          />
+
+          <button
+            type="submit"
+            class="btn-submit shimmer-effect btn-save"
+          >
+            <span>
+              Save Changes
+            </span>
+          </button>
+
+        </form>
+
+      </div>
+
+
+      <!-- PHOTO 3 -->
+
+      <div class="admin-card">
+
+        <span class="badge-yellow">
+          Photography Card 3
+        </span>
+
+        <h3 class="admin-card-title">
+          Photo Slot 3
+        </h3>
+
+        <div class="preview-box">
+
+          <img
+            id="prev-photo-3"
+            src="https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=800&fm=webp&q=80"
+            alt="Preview"
+          />
+
+        </div>
+
+        <form
+          class="upload-form"
+          data-element="photo-3"
+        >
+
+          <input
+            type="hidden"
+            name="element_id"
+            value="photo-3"
+          />
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Title
+            </label>
+
+            <input
+              type="text"
+              name="title"
+              class="form-input title-input"
+              placeholder="e.g. Golden Hour Horizon"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Subtitle
+            </label>
+
+            <input
+              type="text"
+              name="subtitle"
+              class="form-input subtitle-input"
+              placeholder="e.g. Nature Photography"
+            />
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label
+              class="form-label"
+              style="font-size:0.8rem; color:var(--text-muted);"
+            >
+              Badge Tag
+            </label>
+
+            <input
+              type="text"
+              name="badge"
+              class="form-input badge-input"
+              placeholder="e.g. Mobile Shot / Graded"
+            />
+
+          </div>
+
+
+          <label
+            class="btn-select"
+            for="file-photo-3"
+          >
+            Choose New Image (Optional)
+          </label>
+
+          <input
+            type="file"
+            id="file-photo-3"
+            class="file-input"
+            accept="image/*"
+            data-target-img="prev-photo-3"
+          />
+
+          <button
+            type="submit"
+            class="btn-submit shimmer-effect btn-save"
+          >
+            <span>
+              Save Changes
+            </span>
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================================================
+       TOAST
+  ========================================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+    role="alert"
+  >
+    <span>
+      Saved successfully!
+    </span>
+  </div>
+
+
+  <!-- =========================================================
+       ADMIN JAVASCRIPT
+  ========================================================== -->
+
+  <script>
+
+    const API_BASE_URL =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : 'https://craigmzumara-production.up.railway.app';
+
+
+    /*
+     * ==========================================================
+     * AUTHENTICATED REQUEST HELPER
+     * ==========================================================
+     */
+
+    async function authenticatedRequest(
+      url,
+      options = {}
+    ) {
+
+      let response;
+
+      try {
+
+        response = await fetch(
+          url,
+          {
+            ...options,
+            credentials: 'include'
+          }
+        );
+
+      } catch (error) {
+
+        throw new Error(
+          'Could not connect to the server.'
+        );
+
+      }
+
+
+      /*
+       * If the server requires HTTP Basic Auth,
+       * ask for the admin credentials and retry.
+       */
+
+      if (response.status === 401) {
+
+        const username =
+          prompt(
+            'Enter Admin Username:',
+            'craigmzumara1'
+          );
+
+        const password =
+          prompt(
+            'Enter Admin Password:'
+          );
+
+
+        if (!username || !password) {
+
+          throw new Error(
+            'Authentication cancelled.'
+          );
+
+        }
+
+
+        const credentials =
+          btoa(
+            `${username}:${password}`
+          );
+
+
+        const headers = {
+          ...(options.headers || {}),
+          Authorization:
+            `Basic ${credentials}`
+        };
+
+
+        response = await fetch(
+          url,
+          {
+            ...options,
+            headers,
+            credentials: 'include'
+          }
+        );
+
+      }
+
+
+      return response;
+    }
+
+
+    /*
+     * ==========================================================
+     * HTML ESCAPING
+     * ==========================================================
+     */
+
+    function escapeHtml(value) {
+
+      const div =
+        document.createElement('div');
+
+      div.textContent =
+        value == null
+          ? ''
+          : String(value);
+
+      return div.innerHTML;
+    }
+
+
+    /*
+     * ==========================================================
+     * FALLBACK IMAGE
+     * ==========================================================
+     */
+
+    function getFallbackImageUrl() {
+
+      return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"%3E%3Crect width="800" height="600" fill="%23333"/%3E%3Ctext x="50%25" y="50%25" fill="%23fff" font-family="Arial, Helvetica, sans-serif" font-size="40" dominant-baseline="middle" text-anchor="middle"%3ENo+image+available%3C/text%3E%3C/svg%3E';
+
+    }
+
+
+    /*
+     * ==========================================================
+     * SHOW TOAST
+     * ==========================================================
+     */
+
+    function showToast(message) {
+
+      const toast =
+        document.getElementById('toast');
+
+      if (!toast) return;
+
+      const span =
+        toast.querySelector('span');
+
+      if (span) {
+        span.textContent = message;
+      }
+
+      toast.classList.add('show');
+
+      setTimeout(
+        () => {
+          toast.classList.remove('show');
+        },
+        3000
+      );
+
+    }
+
+
+    /*
+     * ==========================================================
+     * INITIALIZATION
+     * ==========================================================
+     */
+
+    document.addEventListener(
+      'DOMContentLoaded',
+      () => {
+
+        initializeTheme();
+
+        initializeImagePreviews();
+
+        initializeBlogCMS();
+
+        initializeProjectAndPhotoForms();
+
+        loadAdminImages();
+
+        loadAdminPosts();
+
+      }
+    );
+
+
+    /*
+     * ==========================================================
+     * THEME
+     * ==========================================================
+     */
+
+    function initializeTheme() {
+
+      const themeToggleBtn =
+        document.getElementById(
+          'admin-theme-toggle'
+        );
+
+
+      if (!themeToggleBtn) return;
+
+
+      themeToggleBtn.addEventListener(
+        'click',
+        () => {
+
+          const currentTheme =
+            document.documentElement
+              .getAttribute('data-theme');
+
+
+          const newTheme =
+            currentTheme === 'dark'
+              ? 'light'
+              : 'dark';
+
+
+          document.documentElement
+            .setAttribute(
+              'data-theme',
+              newTheme
+            );
+
+
+          localStorage.setItem(
+            'theme',
+            newTheme
+          );
+
+        }
+      );
+
+    }
+
+
+    /*
+     * ==========================================================
+     * IMAGE PREVIEWS
+     * ==========================================================
+     */
+
+    function initializeImagePreviews() {
+
+      document
+        .querySelectorAll('.file-input')
+        .forEach(
+          input => {
+
+            input.addEventListener(
+              'change',
+              event => {
+
+                const file =
+                  event.target.files[0];
+
+                const targetImgId =
+                  event.target
+                    .getAttribute(
+                      'data-target-img'
+                    );
+
+
+                if (!file) return;
+
+
+                /*
+                 * Blog cover preview
+                 */
+
+                if (
+                  event.target.id ===
+                  'file-blog-image'
+                ) {
+
+                  const preview =
+                    document.getElementById(
+                      'blog-image-preview'
+                    );
+
+                  const container =
+                    document.getElementById(
+                      'blog-image-preview-container'
+                    );
+
+
+                  if (preview && container) {
+
+                    const reader =
+                      new FileReader();
+
+
+                    reader.onload =
+                      event => {
+
+                        preview.src =
+                          event.target.result;
+
+                        container.style.display =
+                          'block';
+
+                      };
+
+
+                    reader.readAsDataURL(file);
+
+                  }
+
+                  return;
+
+                }
+
+
+                /*
+                 * Project / photography previews
+                 */
+
+                if (
+                  targetImgId
+                ) {
+
+                  const target =
+                    document.getElementById(
+                      targetImgId
+                    );
+
+
+                  if (!target) return;
+
+
+                  const reader =
+                    new FileReader();
+
+
+                  reader.onload =
+                    event => {
+
+                      target.src =
+                        event.target.result;
+
+                    };
+
+
+                  reader.readAsDataURL(file);
+
+                }
+
+              }
+            );
+
+          }
+        );
+
+    }
+
+
+    /*
+     * ==========================================================
+     * BLOG CMS
+     * ==========================================================
+     */
+
+    async function initializeBlogCMS() {
+
+      const form =
+        document.getElementById(
+          'blog-publish-form'
+        );
+
+
+      if (!form) return;
+
+
+      const categorySelect =
+        document.getElementById(
+          'blog-category'
+        );
+
+
+      const tagsContainer =
+        document.getElementById(
+          'blog-tags-container'
+        );
+
+
+      const statusSelect =
+        document.getElementById(
+          'blog-status'
+        );
+
+
+      const submitText =
+        document.getElementById(
+          'blog-submit-text'
+        );
+
+
+      const resetButton =
+        document.getElementById(
+          'blog-reset-button'
+        );
+
+
+      /*
+       * Load categories and tags.
+       */
+
+      await loadBlogCategories(
+        categorySelect
+      );
+
+      await loadBlogTags(
+        tagsContainer
+      );
+
+
+      /*
+       * Update submit text.
+       */
+
+      if (statusSelect) {
+
+        statusSelect.addEventListener(
+          'change',
+          () => {
+
+            submitText.textContent =
+              statusSelect.value === 'draft'
+                ? 'Save Draft'
+                : 'Publish Post';
+
+          }
+        );
+
+      }
+
+
+      /*
+       * Reset button.
+       */
+
+      if (resetButton) {
+
+        resetButton.addEventListener(
+          'click',
+          () => {
+
+            form.reset();
+
+
+            const previewContainer =
+              document.getElementById(
+                'blog-image-preview-container'
+              );
+
+
+            if (previewContainer) {
+
+              previewContainer.style.display =
+                'none';
+
+            }
+
+
+            if (submitText) {
+
+              submitText.textContent =
+                'Publish Post';
+
+            }
+
+          }
+        );
+
+      }
+
+
+      /*
+       * Submit blog post.
+       */
+
+      form.addEventListener(
+        'submit',
+        async event => {
+
+          event.preventDefault();
+
+
+          const title =
+            document.getElementById(
+              'blog-title'
+            ).value.trim();
+
+
+          const excerpt =
+            document.getElementById(
+              'blog-excerpt'
+            ).value.trim();
+
+
+          const content =
+            document.getElementById(
+              'blog-content'
+            ).value.trim();
+
+
+          const categoryId =
+            categorySelect
+              ? categorySelect.value
+              : '';
+
+
+          const status =
+            statusSelect
+              ? statusSelect.value
+              : 'published';
+
+
+          const featured =
+            document.getElementById(
+              'blog-featured'
+            ).checked;
+
+
+          const imageInput =
+            document.getElementById(
+              'file-blog-image'
+            );
+
+
+          /*
+           * Validation
+           */
+
+          if (!title) {
+
+            alert(
+              'Please enter a title.'
+            );
+
+            return;
+
+          }
+
+
+          if (!content) {
+
+            alert(
+              'Please enter article content.'
+            );
+
+            return;
+
+          }
+
+
+          /*
+           * Selected tags
+           */
+
+          const selectedTags =
+            Array.from(
+              document.querySelectorAll(
+                'input[name="blog-tag"]:checked'
+              )
+            ).map(
+              checkbox =>
+                checkbox.value
+            );
+
+
+          /*
+           * Build FormData
+           */
+
+          const formData =
+            new FormData();
+
+
+          formData.append(
+            'title',
+            title
+          );
+
+
+          formData.append(
+            'excerpt',
+            excerpt
+          );
+
+
+          formData.append(
+            'content',
+            content
+          );
+
+
+          formData.append(
+            'category_id',
+            categoryId
+          );
+
+
+          formData.append(
+            'tags',
+            JSON.stringify(
+              selectedTags
+            )
+          );
+
+
+          formData.append(
+            'featured',
+            String(featured)
+          );
+
+
+          formData.append(
+            'status',
+            status
+          );
+
+
+          if (
+            imageInput &&
+            imageInput.files &&
+            imageInput.files[0]
+          ) {
+
+            formData.append(
+              'image',
+              imageInput.files[0]
+            );
+
+          }
+
+
+          /*
+           * Disable submit button.
+           */
+
+          const submitButton =
+            document.getElementById(
+              'blog-submit-button'
+            );
+
+
+          const originalText =
+            submitText.textContent;
+
+
+          if (submitButton) {
+
+            submitButton.disabled =
+              true;
+
+          }
+
+
+          submitText.textContent =
+            status === 'draft'
+              ? 'Saving...'
+              : 'Publishing...';
+
+
+          try {
+
+            const response =
+              await authenticatedRequest(
+                `${API_BASE_URL}/api/blog/posts`,
+                {
+                  method: 'POST',
+                  body: formData
+                }
+              );
+
+
+            let result;
+
+
+            try {
+
+              result =
+                await response.json();
+
+            } catch {
+
+              throw new Error(
+                `Server returned HTTP ${response.status}.`
+              );
+
+            }
+
+
+            if (!response.ok) {
+
+              throw new Error(
+                result.error ||
+                `Request failed with status ${response.status}.`
+              );
+
+            }
+
+
+            if (!result.success) {
+
+              throw new Error(
+                result.error ||
+                'The post could not be saved.'
+              );
+
+            }
+
+
+            /*
+             * Success.
+             */
+
+            showToast(
+              status === 'draft'
+                ? 'Draft saved successfully!'
+                : 'Post published successfully!'
+            );
+
+
+            form.reset();
+
+
+            const previewContainer =
+              document.getElementById(
+                'blog-image-preview-container'
+              );
+
+
+            if (previewContainer) {
+
+              previewContainer.style.display =
+                'none';
+
+            }
+
+
+            submitText.textContent =
+              'Publish Post';
+
+
+            /*
+             * Refresh post list.
+             */
+
+            await loadAdminPosts();
+
+          } catch (error) {
+
+            console.error(
+              'Blog publishing failed:',
+              error
+            );
+
+
+            alert(
+              error.message ||
+              'Failed to save the blog post.'
+            );
+
+
+            submitText.textContent =
+              originalText;
+
+          } finally {
+
+            if (submitButton) {
+
+              submitButton.disabled =
+                false;
+
+            }
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /*
+     * ==========================================================
+     * LOAD CATEGORIES
+     * ==========================================================
+     */
+
+    async function loadBlogCategories(
+      select
+    ) {
+
+      if (!select) return;
+
+
+      try {
+
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/blog/categories`
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Unable to load categories.'
+          );
+
+        }
+
+
+        const categories =
+          await response.json();
+
+
+        select.innerHTML =
+          '<option value="">Select category</option>';
+
+
+        if (!Array.isArray(categories)) {
+          return;
+        }
+
+
+        categories.forEach(
+          category => {
+
+            const option =
+              document.createElement(
+                'option'
+              );
+
+
+            option.value =
+              category.id;
+
+
+            option.textContent =
+              category.name;
+
+
+            select.appendChild(
+              option
+            );
+
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          'Failed to load categories:',
+          error
+        );
+
+
+        select.innerHTML =
+          '<option value="">Categories unavailable</option>';
+
+      }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * LOAD TAGS
+     * ==========================================================
+     */
+
+    async function loadBlogTags(
+      container
+    ) {
+
+      if (!container) return;
+
+
+      try {
+
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/blog/tags`
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Unable to load tags.'
+          );
+
+        }
+
+
+        const tags =
+          await response.json();
+
+
+        container.innerHTML = '';
+
+
+        if (
+          !Array.isArray(tags) ||
+          tags.length === 0
+        ) {
+
+          container.innerHTML =
+            '<span style="color:var(--text-muted); font-size:0.85rem;">No tags available.</span>';
+
+          return;
+
+        }
+
+
+        tags.forEach(
+          tag => {
+
+            const label =
+              document.createElement(
+                'label'
+              );
+
+
+            label.className =
+              'blog-tag-option';
+
+
+            const checkbox =
+              document.createElement(
+                'input'
+              );
+
+
+            checkbox.type =
+              'checkbox';
+
+
+            checkbox.name =
+              'blog-tag';
+
+
+            checkbox.value =
+              tag.id;
+
+
+            const text =
+              document.createElement(
+                'span'
+              );
+
+
+            text.textContent =
+              `#${tag.name}`;
+
+
+            label.appendChild(
+              checkbox
+            );
+
+
+            label.appendChild(
+              text
+            );
+
+
+            container.appendChild(
+              label
+            );
+
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          'Failed to load tags:',
+          error
+        );
+
+
+        container.innerHTML =
+          '<span style="color:var(--text-muted); font-size:0.85rem;">Tags unavailable.</span>';
+
+      }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * LOAD ADMIN POSTS
+     * ==========================================================
+     */
+
+    async function loadAdminPosts() {
+
+      const listContainer =
+        document.getElementById(
+          'admin-posts-list'
+        );
+
+
+      if (!listContainer) return;
+
+
+      try {
+
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/blog/posts`
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Failed to load blog posts.'
+          );
+
+        }
+
+
+        const posts =
+          await response.json();
+
+
+        if (
+          !Array.isArray(posts) ||
+          posts.length === 0
+        ) {
+
+          listContainer.innerHTML =
+            '<p style="color:var(--text-muted);">No blog posts found.</p>';
+
+          return;
+
+        }
+
+
+        listContainer.innerHTML =
+          posts
+            .map(
+              post => {
+
+                const title =
+                  escapeHtml(
+                    post.title ||
+                    'Untitled Post'
+                  );
+
+
+                const status =
+                  escapeHtml(
+                    post.status ||
+                    'published'
+                  );
+
+
+                const category =
+                  escapeHtml(
+                    post.category_name ||
+                    'Uncategorized'
+                  );
+
+
+                const date =
+                  post.published_at ||
+                  post.created_at;
+
+
+                return `
+                  <div
+                    class="admin-post-item"
+                    id="admin-post-${post.id}"
+                  >
+
+                    <div class="post-info">
+
+                      <h4>
+                        ${title}
+                      </h4>
+
+                      <span class="post-date">
+                        ${date
+                          ? new Date(date).toLocaleDateString()
+                          : ''}
+                      </span>
+
+                      <br>
+
+                      <span class="post-status">
+                        ${status}
+                      </span>
+
+                      <span
+                        class="post-status"
+                        style="margin-left:5px;"
+                      >
+                        ${category}
+                      </span>
+
+                    </div>
+
+                    <button
+                      type="button"
+                      onclick="deleteBlogPost(${post.id})"
+                      class="btn-delete-post"
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+                `;
+
+              }
+            )
+            .join('');
+
+      } catch (error) {
+
+        console.error(
+          'Failed to load posts:',
+          error
+        );
+
+
+        listContainer.innerHTML =
+          '<p style="color:#ff5555;">Unable to load blog posts.</p>';
+
+      }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * DELETE BLOG POST
+     * ==========================================================
+     */
+
+    async function deleteBlogPost(
+      postId
+    ) {
+
+      if (
+        !confirm(
+          'Are you sure you want to delete this blog post?'
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      try {
+
+        const response =
+          await authenticatedRequest(
+            `${API_BASE_URL}/api/admin/blog/posts/${postId}`,
+            {
+              method: 'DELETE'
+            }
+          );
+
+
+        let result;
+
+
+        try {
+
+          result =
+            await response.json();
+
+        } catch {
+
+          throw new Error(
+            `Server returned HTTP ${response.status}.`
+          );
+
+        }
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            result.error ||
+            `Delete failed with status ${response.status}.`
+          );
+
+        }
+
+
+        if (!result.success) {
+
+          throw new Error(
+            result.error ||
+            'Failed to delete post.'
+          );
+
+        }
+
+
+        const element =
+          document.getElementById(
+            `admin-post-${postId}`
+          );
+
+
+        if (element) {
+
+          element.remove();
+
+        }
+
+
+        showToast(
+          'Post deleted successfully!'
+        );
+
+      } catch (error) {
+
+        console.error(
+          'Failed to delete blog post:',
+          error
+        );
+
+
+        alert(
+          error.message ||
+          'Failed to delete blog post.'
+        );
+
+      }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * LOAD PROJECT / PHOTOGRAPHY DATA
+     * ==========================================================
+     */
+
+    async function loadAdminImages() {
+
+      try {
+
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/images`
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Failed to load image data.'
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        if (!Array.isArray(data)) {
+          return;
+        }
+
+
+        data.forEach(
+          item => {
+
+            const previewImg =
+              document.getElementById(
+                `prev-${item.element_id}`
+              );
+
+
+            if (previewImg) {
+
+              previewImg.src =
+                item.image_url
+                  ? (
+                      item.image_url.startsWith('http')
+                        ? item.image_url
+                        : `${API_BASE_URL}/${item.image_url}`
+                    )
+                  : getFallbackImageUrl();
+
+            }
+
+
+            const form =
+              document.querySelector(
+                `.upload-form[data-element="${item.element_id}"]`
+              );
+
+
+            if (!form) {
+              return;
+            }
+
+
+            const titleInput =
+              form.querySelector(
+                '.title-input'
+              );
+
+
+            const subtitleInput =
+              form.querySelector(
+                '.subtitle-input'
+              );
+
+
+            const badgeInput =
+              form.querySelector(
+                '.badge-input'
+              );
+
+
+            const techTagsInput =
+              form.querySelector(
+                '.tech-tags-input'
+              );
+
+
+            const demoUrlInput =
+              form.querySelector(
+                '.demo-url-input'
+              );
+
+
+            const githubUrlInput =
+              form.querySelector(
+                '.github-url-input'
+              );
+
+
+            if (
+              titleInput &&
+              item.title
+            ) {
+
+              titleInput.value =
+                item.title;
+
+            }
+
+
+            if (
+              subtitleInput &&
+              item.subtitle
+            ) {
+
+              subtitleInput.value =
+                item.subtitle;
+
+            }
+
+
+            if (
+              badgeInput &&
+              item.badge
+            ) {
+
+              badgeInput.value =
+                item.badge;
+
+            }
+
+
+            if (
+              techTagsInput &&
+              item.tech_tags
+            ) {
+
+              techTagsInput.value =
+                item.tech_tags;
+
+            }
+
+
+            if (
+              demoUrlInput &&
+              item.live_demo_url
+            ) {
+
+              demoUrlInput.value =
+                item.live_demo_url;
+
+            }
+
+
+            if (
+              githubUrlInput &&
+              item.github_url
+            ) {
+
+              githubUrlInput.value =
+                item.github_url;
+
+            }
+
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          'Error populating admin fields:',
+          error
+        );
+
+      }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * PROJECT / PHOTOGRAPHY FORMS
+     * ==========================================================
+     */
+
+    function initializeProjectAndPhotoForms() {
+
+      const forms =
+        document.querySelectorAll(
+          '.upload-form'
+        );
+
+
+      forms.forEach(
+        form => {
+
+          form.addEventListener(
+            'submit',
+            async event => {
+
+              event.preventDefault();
+
+
+              const elementId =
+                form.getAttribute(
+                  'data-element'
+                );
+
+
+              const fileInput =
+                form.querySelector(
+                  '.file-input'
+                );
+
+
+              const titleInput =
+                form.querySelector(
+                  '.title-input'
+                )?.value || '';
+
+
+              const subtitleInput =
+                form.querySelector(
+                  '.subtitle-input'
+                )?.value || '';
+
+
+              const badgeInput =
+                form.querySelector(
+                  '.badge-input'
+                )?.value || '';
+
+
+              const techTagsInput =
+                form.querySelector(
+                  '.tech-tags-input'
+                )?.value || '';
+
+
+              const demoUrlInput =
+                form.querySelector(
+                  '.demo-url-input'
+                )?.value || '';
+
+
+              const githubUrlInput =
+                form.querySelector(
+                  '.github-url-input'
+                )?.value || '';
+
+
+              const formData =
+                new FormData();
+
+
+              formData.append(
+                'element_id',
+                elementId
+              );
+
+
+              formData.append(
+                'title',
+                titleInput
+              );
+
+
+              formData.append(
+                'subtitle',
+                subtitleInput
+              );
+
+
+              formData.append(
+                'badge',
+                badgeInput
+              );
+
+
+              formData.append(
+                'tech_tags',
+                techTagsInput
+              );
+
+
+              formData.append(
+                'live_demo_url',
+                demoUrlInput
+              );
+
+
+              formData.append(
+                'github_url',
+                githubUrlInput
+              );
+
+
+              if (
+                fileInput &&
+                fileInput.files &&
+                fileInput.files[0]
+              ) {
+
+                formData.append(
+                  'image',
+                  fileInput.files[0]
+                );
+
+              }
+
+
+              const submitButton =
+                form.querySelector(
+                  'button[type="submit"]'
+                );
+
+
+              const originalText =
+                submitButton
+                  ? submitButton.textContent
+                  : 'Save Changes';
+
+
+              if (submitButton) {
+
+                submitButton.disabled =
+                  true;
+
+                submitButton.textContent =
+                  'Saving...';
+
+              }
+
+
+              try {
+
+                const response =
+                  await authenticatedRequest(
+                    `${API_BASE_URL}/api/admin/upload-image`,
+                    {
+                      method: 'POST',
+                      body: formData
+                    }
+                  );
+
+
+                let result;
+
+
+                try {
+
+                  result =
+                    await response.json();
+
+                } catch {
+
+                  throw new Error(
+                    `Server returned HTTP ${response.status}.`
+                  );
+
+                }
+
+
+                if (!response.ok) {
+
+                  throw new Error(
+                    result.error ||
+                    `Update failed with status ${response.status}.`
+                  );
+
+                }
+
+
+                if (!result.success) {
+
+                  throw new Error(
+                    result.error ||
+                    'Update failed.'
+                  );
+
+                }
+
+
+                showToast(
+                  'Changes saved successfully!'
+                );
+
+
+              } catch (error) {
+
+                console.error(
+                  'Error updating data:',
+                  error
+                );
+
+
+                alert(
+                  error.message ||
+                  'Error updating data.'
+                );
+
+
+              } finally {
+
+                if (submitButton) {
+
+                  submitButton.disabled =
+                    false;
+
+                  submitButton.textContent =
+                    originalText;
+
+                }
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+    }
+
+  </script>
+
+</body>
+</html>
