@@ -1,11 +1,27 @@
-const basicAuth = require('express-basic-auth');
+const basicAuth = require("express-basic-auth");
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_USERNAME =
+  "craigmzumara1";
+
+const ADMIN_PASSWORD =
+  process.env.ADMIN_PASSWORD;
 
 const adminAuth = basicAuth({
-  users: { 'craigmzumara1': ADMIN_PASSWORD || '' },
+  users: {
+    [ADMIN_USERNAME]:
+      ADMIN_PASSWORD || ""
+  },
+
   challenge: true,
-  unauthorizedResponse: req => req.auth ? 'Credentials rejected' : 'No credentials provided'
+
+  unauthorizedResponse: () => {
+    return JSON.stringify({
+      success: false,
+      error: "Invalid admin credentials"
+    });
+  }
 });
 
-module.exports = { adminAuth };
+module.exports = {
+  adminAuth
+};

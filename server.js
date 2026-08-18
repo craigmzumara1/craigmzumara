@@ -45,9 +45,10 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
+
       /*
-       * Allow requests with no Origin header.
-       * This covers server-to-server requests and tools.
+       * Requests without an Origin header are allowed.
+       * This includes server-to-server requests.
        */
       if (!origin) {
         return callback(null, true);
@@ -58,15 +59,22 @@ app.use(
       }
 
       console.warn(
-        `Blocked CORS origin: ${origin}`
+        "CORS blocked origin:",
+        origin
       );
 
       return callback(
-        new Error("Not allowed by CORS")
+        new Error(
+          `CORS blocked origin: ${origin}`
+        )
       );
     },
 
-    credentials: true,
+    /*
+     * We are using HTTP Basic Auth,
+     * not cookies/session authentication.
+     */
+    credentials: false,
 
     methods: [
       "GET",
@@ -80,9 +88,13 @@ app.use(
     allowedHeaders: [
       "Content-Type",
       "Authorization"
-    ]
+    ],
+
+    optionsSuccessStatus: 204
   })
 );
+
+app.options("*", cors());
 
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth, adminRoutes);
