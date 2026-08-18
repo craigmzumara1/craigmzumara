@@ -164,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Ensure Web3Forms required fields are set
       formData.set('access_key', 'cf7a4c43-431f-4461-9efe-627b2d41f612');
-      formData.set('email', formData.get('contact'));
 
       const payload = {
         name: formData.get('name'),
@@ -174,28 +173,71 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
-        const [web3Res, dbRes] = await Promise.all([
-          fetch('https://api.web3forms.com/submit', {
+        /*
+         * Send the email first.
+         * Saving a copy in PostgreSQL is optional. A database
+         * problem must never make a successfully sent email
+         * look like it failed.
+         */
+        const web3Res = await fetch(
+          'https://api.web3forms.com/submit',
+          {
             method: 'POST',
             body: formData
-          }),
-          fetch(`${API_BASE_URL}/api/contact`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
-        ]);
+          }
+        );
 
-        if (web3Res.ok && dbRes.ok) {
-          toast.textContent = 'Message sent successfully! I’ll be in touch soon.';
-          toast.classList.add('show');
-          contactForm.reset();
-          setTimeout(() => toast.classList.remove('show'), 4000);
-        } else {
-          const web3Err = await web3Res.json().catch(() => ({}));
-          console.error('Web3Forms Error Response:', web3Err);
-          throw new Error('Web3Forms or DB submission failed');
+        const web3Result =
+          await web3Res.json().catch(() => ({}));
+
+        if (!web3Res.ok || web3Result.success === false) {
+          console.error(
+            'Web3Forms Error Response:',
+            web3Result
+          );
+          throw new Error(
+            web3Result.message ||
+            'The email service rejected the message.'
+          );
         }
+
+        /*
+         * Save a copy to Railway/PostgreSQL, but do not block
+         * the email if the database is temporarily unavailable.
+         */
+        try {
+          const dbRes = await fetch(
+            `${API_BASE_URL}/api/contact`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            }
+          );
+
+          if (!dbRes.ok) {
+            console.warn(
+              'Contact email was sent, but database save failed:',
+              dbRes.status
+            );
+          }
+        } catch (dbError) {
+          console.warn(
+            'Contact email was sent, but database save failed:',
+            dbError
+          );
+        }
+
+        toast.textContent =
+          'Message sent successfully! I’ll be in touch soon.';
+        toast.classList.add('show');
+        contactForm.reset();
+        setTimeout(
+          () => toast.classList.remove('show'),
+          4000
+        );
       } catch (err) {
         console.error('Submission Error:', err);
         toast.textContent = 'Unable to send message right now. Please try again or reach out directly.';

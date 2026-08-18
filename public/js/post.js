@@ -1162,5 +1162,4 @@ console.log("Loading post ID:", POST_ID);
         await loadComments();
       }
     );
-
     

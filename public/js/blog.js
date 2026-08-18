@@ -135,7 +135,9 @@ window.API_BASE_URL =
 
 
    function getPostUrl(postId) {
-  return `${window.location.origin}/post/${encodeURIComponent(postId)}`;
+  // Firebase serves post.html directly. Do not use /post/:id
+  // because that path is not guaranteed to rewrite to post.html.
+  return `${window.location.origin}/post.html?id=${encodeURIComponent(postId)}`;
 }
 
 
