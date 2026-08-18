@@ -1,0 +1,65 @@
+[debug] [2026-08-18T09:48:57.212Z] ----------------------------------------------------------------------
+[debug] [2026-08-18T09:48:57.230Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\majabulah\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2026-08-18T09:48:57.231Z] CLI Version:   15.26.0
+[debug] [2026-08-18T09:48:57.232Z] Platform:      win32
+[debug] [2026-08-18T09:48:57.232Z] Node Version:  v22.23.1
+[debug] [2026-08-18T09:48:57.232Z] Detected Agent: unknown
+[debug] [2026-08-18T09:48:57.232Z] Time:          Tue Aug 18 2026 11:48:57 GMT+0200 (South Africa Standard Time)
+[debug] [2026-08-18T09:48:57.233Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-18T09:49:01.854Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-18T09:49:01.854Z] > authorizing via signed-in user (craigmzumara13@gmail.com)
+[debug] [2026-08-18T09:49:01.855Z] [iam] checking project craig-mzumara for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-08-18T09:49:01.885Z] Checked if tokens are valid: false, expires at: 1787046829795
+[debug] [2026-08-18T09:49:01.886Z] Checked if tokens are valid: false, expires at: 1787046829795
+[debug] [2026-08-18T09:49:01.886Z] > refreshing access token with scopes: []
+[debug] [2026-08-18T09:49:01.890Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-08-18T09:49:01.890Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-18T09:49:02.973Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-08-18T09:49:02.973Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-18T09:49:02.996Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/craig-mzumara:testIamPermissions [none]
+[debug] [2026-08-18T09:49:02.996Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/craig-mzumara:testIamPermissions  x-goog-user-project=craig-mzumara
+[debug] [2026-08-18T09:49:02.996Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/craig-mzumara:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-08-18T09:49:05.735Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/craig-mzumara:testIamPermissions 200
+[debug] [2026-08-18T09:49:05.736Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/craig-mzumara:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-08-18T09:49:05.737Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:05.738Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:05.738Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/craig-mzumara [none]
+[debug] [2026-08-18T09:49:11.240Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/craig-mzumara 200
+[debug] [2026-08-18T09:49:11.240Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/craig-mzumara {"projectId":"craig-mzumara","projectNumber":"723387764121","displayName":"craig-mzumara","name":"projects/craig-mzumara","resources":{"hostingSite":"craig-mzumara"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_1a5e7152-2c4a-4147-996c-05d948965f16"}
+[info] 
+[info] === Deploying to 'craig-mzumara'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-08-18T09:49:11.252Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:11.252Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:11.252Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/craig-mzumara/sites/craig-mzumara [none]
+[debug] [2026-08-18T09:49:16.699Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/craig-mzumara/sites/craig-mzumara 200
+[debug] [2026-08-18T09:49:16.699Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/craig-mzumara/sites/craig-mzumara {"name":"projects/craig-mzumara/sites/craig-mzumara","defaultUrl":"https://craig-mzumara.web.app","type":"DEFAULT_SITE"}
+[debug] [2026-08-18T09:49:16.709Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:16.709Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:16.710Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craig-mzumara/versions [none]
+[debug] [2026-08-18T09:49:16.710Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craig-mzumara/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-08-18T09:49:19.017Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craig-mzumara/versions 200
+[debug] [2026-08-18T09:49:19.018Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/craig-mzumara/versions {"name":"projects/723387764121/sites/craig-mzumara/versions/9402e9a611b0e1e5","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[craig-mzumara]: beginning deploy... 
+[info] i  hosting[craig-mzumara]: found 14 files in public 
+[debug] [2026-08-18T09:49:19.071Z] [hosting] uploading with 200 concurrency
+[debug] [2026-08-18T09:49:19.111Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:19.113Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:19.115Z] [hosting] hash cache [cHVibGlj] stored for 14 files
+[debug] [2026-08-18T09:49:19.116Z] [hosting][hash queue][FINAL] {"max":29,"min":1,"avg":4.857142857142857,"active":0,"complete":14,"success":14,"errored":0,"retried":0,"total":14,"elapsed":39}
+[debug] [2026-08-18T09:49:19.117Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/723387764121/sites/craig-mzumara/versions/9402e9a611b0e1e5:populateFiles [none]
+[debug] [2026-08-18T09:49:19.117Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/723387764121/sites/craig-mzumara/versions/9402e9a611b0e1e5:populateFiles {"files":{"/index.html":"9cbcb743531cc3aab4885448e8da9198161a18aafa535cfb5f8b4da0e4987f60","/admin.html":"5c2aec51d24a339e0b9124de1f6592ff364369bbd6a1c899d1fe9f25daf943fe","/404.html":"762bf484ba67404bd1a3b181546ea28d60dfddf18e9dd4795d8d25bcf3c1a890","/js/script.js":"2a1afa3706fed1c60e08fadc661ba4015fc9f80a1be7da135b14a16c18e66131","/js/post.js":"46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e","/js/index.js":"46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e","/js/blog.js":"46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e","/js/admin.js":"46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e","/css/style.css":"53320e4768cbd7bbdd69cdca3b556364a10e58f8c3ee29bc253c9706653c6110","/css/post.css":"46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e","/css/blog.css":"46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e","/css/admin.css":"46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e","/post.html":"fe4fb44969a37ce6e20b43a90ef76c352ac66658ac659e278a8c578beeec5425","/blog.html":"fffe127628c8401ceb762ded8cbe74d1c8330d0592c9b1d701bec88e2317a8e3"}}
+[debug] [2026-08-18T09:49:20.454Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/723387764121/sites/craig-mzumara/versions/9402e9a611b0e1e5:populateFiles 200
+[debug] [2026-08-18T09:49:20.454Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/723387764121/sites/craig-mzumara/versions/9402e9a611b0e1e5:populateFiles {"uploadRequiredHashes":["fffe127628c8401ceb762ded8cbe74d1c8330d0592c9b1d701bec88e2317a8e3","fe4fb44969a37ce6e20b43a90ef76c352ac66658ac659e278a8c578beeec5425"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/craig-mzumara/versions/9402e9a611b0e1e5/files"}
+[debug] [2026-08-18T09:49:20.456Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:20.456Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:20.457Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:20.457Z] Checked if tokens are valid: true, expires at: 1787050141973
+[debug] [2026-08-18T09:49:20.458Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/craig-mzumara/versions/9402e9a611b0e1e5/files/fffe127628c8401ceb762ded8cbe74d1c8330d0592c9b1d701bec88e2317a8e3 [none]
+[debug] [2026-08-18T09:49:20.458Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/craig-mzumara/versions/9402e9a611b0e1e5/files/fffe127628c8401ceb762ded8cbe74d1c8330d0592c9b1d701bec88e2317a8e3 [stream]
+[debug] [2026-08-18T09:49:20.464Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/craig-mzumara/versions/9402e9a611b0e1e5/files/fe4fb44969a37ce6e20b43a90ef76c352ac66658ac659e278a8c578beeec5425 [none]
+[debug] [2026-08-18T09:49:20.464Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/craig-mzumara/versions/9402e9a611b0e1e5/files/fe4fb44969a37ce6e20b43a90ef76c352ac66658ac659e278a8c578beeec5425 [stream]
+[debug] [2026-08-18T09:49:20.471Z] [hosting][populate queue][FINAL] {"max":1348,"min":1348,"avg":1348,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1361}
+[debug] [2026-08-18T09:49:20.471Z] [hosting] uploads queued: 2
