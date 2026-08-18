@@ -442,8 +442,17 @@ router.get('/render/:postId', async (req, res) => {
     const postHtml = fs.readFileSync(POST_TEMPLATE_PATH, 'utf8')
       .replace(/%POST_TITLE%/g, escapeHtml(post.title || 'Blog Post'))
       .replace(/%POST_DESCRIPTION%/g, escapeHtml((post.content || '').substring(0, 150)))
-      .replace(/%POST_IMAGE%/g, escapeHtml(post.image_url || 'https://craigmzumara-production.up.railway.app/og-default.png'))
-      .replace(/%POST_URL%/g, `https://craigmzumara.netlify.app/post/${postId}`)
+      .replace(
+  /%POST_IMAGE%/g,
+  escapeHtml(
+    post.image_url ||
+    'https://craigmzumara-production.up.railway.app/og-default.png'
+  )
+)
+.replace(
+  /%POST_URL%/g,
+  `https://craig-mzumara.web.app/post.html?id=${postId}`
+)
       .replace(/%POST_ID%/g, String(postId))
       .replace(/%POST_CONTENT%/g, escapeHtml(post.content || ''))
       .replace(/%POST_CREATED_AT%/g, escapeHtml(new Date(post.created_at).toLocaleDateString()))

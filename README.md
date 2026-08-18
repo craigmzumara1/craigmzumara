@@ -11,7 +11,7 @@ This application is built with a modern web stack to ensure performance and scal
 *   **Runtime:** Node.js & Express
 *   **Database:** PostgreSQL (hosted on Supabase)
 *   **Frontend:** HTML5, CSS3, & JavaScript
-*   **Deployment:** Netlify
+*   **Deployment:** Firebase Hosting
 *   **Architecture:** Progressive Web App (PWA) & Mobile-First Design
 
 ## ✨ Key Features
@@ -30,8 +30,5 @@ I am currently a student studying Mathematics and Computer Science, channeling m
 *   **Email:** craigmzumaraofficial@gmail.com
 *   **WhatsApp:** +265 995 38 96 65
 *   **GitHub:** [craigmzumara](https://github.com/craigmzumara1)
-*   **Website:** [craigmzumara.netlify.app](https://craigmzumara.netlify.app/)
-
-* [![Netlify Status](https://api.netlify.com/api/v1/badges/3c6eae86-6b1e-45e8-a6c0-11a345d1d23a/deploy-status)](https://app.netlify.com/projects/craigmzumara/deploys)
-
+*   **Website:** [ craig-mzumara.web.app/]( https://craig-mzumara.web.app/)
 ---

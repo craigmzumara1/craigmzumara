@@ -1181,17 +1181,17 @@
   <script src="/script.js"></script>
 
   <script>
-    /* =========================================================
-       API CONFIGURATION
-       ========================================================= */
+    /*
+ * ========================================================
+ * API CONFIGURATION
+ * ========================================================
+ */
 
-    if (typeof API_BASE_URL === "undefined") {
-      window.API_BASE_URL =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-          ? "http://localhost:3000"
-          : "https://craigmzumara-production.up.railway.app";
-    }
+window.API_BASE_URL =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : "https://craigmzumara-production.up.railway.app";
 
     /* =========================================================
        POST ID

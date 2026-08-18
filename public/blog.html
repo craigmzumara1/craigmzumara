@@ -21,9 +21,9 @@
     content="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png"
   />
   <meta
-    property="og:url"
-    content="https://craigmzumara.netlify.app/blog.html"
-  />
+  property="og:url"
+  content="https://craig-mzumara.web.app/blog.html"
+/>
   <meta property="og:type" content="website" />
 
   <meta name="twitter:card" content="summary_large_image" />
@@ -1312,21 +1312,26 @@
   <script>
 
     /*
-     * ========================================================
-     * API
-     * ========================================================
-     */
+ * ========================================================
+ * API CONFIGURATION
+ * ========================================================
+ *
+ * Frontend:
+ *   Firebase Hosting
+ *
+ * Backend:
+ *   Railway
+ *
+ * Database / Storage:
+ *   Supabase
+ * ========================================================
+ */
 
-    if (typeof API_BASE_URL === "undefined") {
-
-      window.API_BASE_URL =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-          ? "http://localhost:3000"
-          : "https://craigmzumara-production.up.railway.app";
-
-    }
-
+window.API_BASE_URL =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : "https://craigmzumara-production.up.railway.app";
 
     /*
      * ========================================================

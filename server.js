@@ -36,7 +36,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: ['https://craigmzumara.netlify.app', 'http://localhost:3000'],
+  origin: [
+  'https://craig-mzumara.web.app',
+  'http://localhost:3000'
+],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

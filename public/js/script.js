@@ -17,12 +17,17 @@
 
 
 
-// Point frontend fetch calls to your Railway backend
-window.API_BASE_URL = window.API_BASE_URL || (
-  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3000'
-    : 'https://craigmzumara-production.up.railway.app'
-);
+// ============================================================
+// API CONFIGURATION
+// Firebase hosts the frontend.
+// Railway hosts the backend/API.
+// ============================================================
+
+window.API_BASE_URL =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : "https://craigmzumara-production.up.railway.app";
 
 var initialTheme = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', initialTheme);
