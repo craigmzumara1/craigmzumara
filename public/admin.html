@@ -15,9 +15,10 @@
     const currentTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', currentTheme);
   </script>
-
-  <link rel="stylesheet" href="css/style.css" />
-
+<link
+  rel="stylesheet"
+  href="https://craig-mzumara.web.app/css/style.css"
+/>
   <style>
     .admin-container {
       padding: 40px 0;
@@ -1236,101 +1237,86 @@
 
   <script>
 
-   const API_BASE_URL =
+  const API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
     : "https://craigmzumara-production.up.railway.app";
-
     /*
      * ==========================================================
      * AUTHENTICATED REQUEST HELPER
      * ==========================================================
      */
 
-    async function authenticatedRequest(
-      url,
-      options = {}
-    ) {
+    async function authenticatedRequest(url, options = {}) {
+  let response;
 
-      let response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      credentials: "include"
+    });
+  } catch (error) {
+    console.error("API connection error:", error);
 
-      try {
+    throw new Error(
+      "Could not communicate with the server. Check your internet connection or Railway server."
+    );
+  }
 
-        response = await fetch(
-          url,
-          {
-            ...options,
-            credentials: 'include'
-          }
-        );
+  /*
+   * Railway uses HTTP Basic Authentication.
+   *
+   * The first request intentionally has no Authorization header.
+   * Railway responds with 401, then we ask for credentials and retry.
+   */
+  if (response.status === 401) {
+    const username = prompt(
+      "Enter Admin Username:",
+      "craigmzumara1"
+    );
 
-      } catch (error) {
+    const password = prompt(
+      "Enter Admin Password:"
+    );
 
-        throw new Error(
-          'Could not connect to the server.'
-        );
-
-      }
-
-
-      /*
-       * If the server requires HTTP Basic Auth,
-       * ask for the admin credentials and retry.
-       */
-
-      if (response.status === 401) {
-
-        const username =
-          prompt(
-            'Enter Admin Username:',
-            'craigmzumara1'
-          );
-
-        const password =
-          prompt(
-            'Enter Admin Password:'
-          );
-
-
-        if (!username || !password) {
-
-          throw new Error(
-            'Authentication cancelled.'
-          );
-
-        }
-
-
-        const credentials =
-          btoa(
-            `${username}:${password}`
-          );
-
-
-        const headers = {
-          ...(options.headers || {}),
-          Authorization:
-            `Basic ${credentials}`
-        };
-
-
-        response = await fetch(
-          url,
-          {
-            ...options,
-            headers,
-            credentials: 'include'
-          }
-        );
-
-      }
-
-
-      return response;
+    if (!username || !password) {
+      throw new Error("Authentication cancelled.");
     }
 
+    const credentials = btoa(
+      `${username}:${password}`
+    );
 
+    const headers = new Headers(
+      options.headers || {}
+    );
+
+    headers.set(
+      "Authorization",
+      `Basic ${credentials}`
+    );
+
+    try {
+      response = await fetch(url, {
+        ...options,
+        headers,
+        credentials: "include"
+      });
+    } catch (error) {
+      console.error(
+        "Authenticated API connection error:",
+        error
+      );
+
+      throw new Error(
+        "Failed to communicate with the Railway server."
+      );
+    }
+  }
+
+  return response;
+}
     /*
      * ==========================================================
      * HTML ESCAPING

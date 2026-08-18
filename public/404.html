@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found — Craig Mzumara</title>
+  
+  <meta name="description" content="The page you are looking for does not exist." />
+  
+  <!-- Inline SVG Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231c1c22'/><text x='50' y='65' font-family='sans-serif' font-size='45' font-weight='bold' fill='%23ffe600' text-anchor='middle'>CM</text></svg>">
+
+  <!-- Default to Dark Mode First -->
+  <script>
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  </script>
+  
+  <link
+  rel="stylesheet"
+  href="https://craig-mzumara.web.app/css/style.css"
+/>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+
+  <!-- Animated Ambient Glow Background -->
+  <div class="bg-glow floating-glow"></div>
+  <div class="bg-glow-secondary floating-glow-delay"></div>
+
+  <!-- Header Navigation -->
+  <header class="navbar-wrapper">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html#home" class="brand-logo">
+          <div class="logo-mark">CM</div>
+          <div class="brand-name">CRAIG <span>MZUMARA</span></div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <ul class="nav-links">
+          <li><a href="index.html#home" class="nav-link">Home</a></li>
+          <li><a href="index.html#about" class="nav-link">About</a></li>
+          <li><a href="index.html#services" class="nav-link">Services</a></li>
+          <li><a href="index.html#projects" class="nav-link">Projects</a></li>
+          <li><a href="index.html#photography" class="nav-link">Photography</a></li>
+          <li><a href="blog.html" class="nav-link nav-blog-pill">Blog</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <!-- Sun Icon (Light Mode) -->
+            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <!-- Moon Icon (Dark Mode) -->
+            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <a href="index.html#contact" class="cta-btn-nav">Say Hello</a>
+
+          <!-- Mobile Menu Trigger -->
+          <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Navigation">
+            <svg class="menu-open-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <svg class="menu-close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Mobile Drawer Nav -->
+    <div id="mobile-drawer" class="mobile-drawer">
+      <ul class="mobile-nav-links">
+        <li><a href="index.html#home" class="mobile-link">Home</a></li>
+        <li><a href="index.html#about" class="mobile-link">About</a></li>
+        <li><a href="index.html#services" class="mobile-link">Services</a></li>
+        <li><a href="index.html#projects" class="mobile-link">Projects</a></li>
+        <li><a href="index.html#photography" class="mobile-link">Photography</a></li>
+        <li><a href="blog.html" class="mobile-link">Blog</a></li>
+        <li><a href="index.html#contact" class="mobile-link">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- 404 Main Error Container (flex-grow pushes footer down) -->
+  <main class="container" style="flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 100px;">
+    <div style="max-width: 600px;">
+      <span style="font-size: 6rem; font-weight: 800; color: var(--accent-color, #ffe600); line-height: 1; display: block; margin-bottom: 20px;">404</span>
+      <h1 style="font-size: 2.2rem; margin-bottom: 15px; color: var(--text-primary, #fff);">Page Not Found</h1>
+      <p style="color: var(--text-secondary, #aaa); font-size: 1.1rem; margin-bottom: 30px;">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+      <a href="index.html" class="cta-btn-nav" style="display: inline-block; padding: 12px 30px; font-size: 1rem;">Back to Home</a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="padding: 30px 0; border-top: 1px solid var(--border-color, #222); margin-top: auto;">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <p>© 2026 Craig Mzumara. All rights reserved.</p>
+      <a href="index.html#home" class="back-to-top">
+        <span>Back to top</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+      </a>
+    </div>
+  </footer>
+
+ <script src="https://craig-mzumara.web.app/js/script.js"></script>
+</body>
+</html>

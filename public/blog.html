@@ -47,7 +47,10 @@
     document.documentElement.setAttribute("data-theme", currentTheme);
   </script>
 
-  <link rel="stylesheet" href="css/style.css" />
+ <link
+  rel="stylesheet"
+  href="https://craig-mzumara.web.app/css/style.css"
+/>
 
   <style>
     /* =========================================================
@@ -1264,7 +1267,7 @@
        EXISTING SITE SCRIPT
   ======================================================== -->
 
-  <script src="js/script.js"></script>
+  <script src="https://craig-mzumara.web.app/js/script.js"></script>
 
   <!-- =======================================================
        BLOG SCRIPT
@@ -1412,7 +1415,7 @@ window.API_BASE_URL =
 
     function getPostUrl(postId) {
 
-      return `${window.location.origin}/post.html?id=${encodeURIComponent(postId)}`;
+     return `${window.location.origin}/post/${encodeURIComponent(POST_ID)}`;
 
     }
 
@@ -1525,80 +1528,173 @@ window.API_BASE_URL =
      * This lets the frontend tolerate slightly different
      * database field names while we restructure the backend.
      */
+function normalizePost(post) {
+  /*
+   * =========================================================
+   * CATEGORY NORMALIZATION
+   * =========================================================
+   */
 
-    function normalizePost(post) {
+  let category = "";
 
-      let tags = [];
+  if (
+    typeof post.category_name === "string" &&
+    post.category_name.trim()
+  ) {
+    category =
+      post.category_name.trim();
+  }
 
-      if (Array.isArray(post.tags)) {
+  /*
+   * Some API responses may provide:
+   *
+   * category: {
+   *   id: 1,
+   *   name: "Education",
+   *   slug: "education"
+   * }
+   */
+  if (
+    !category &&
+    post.category &&
+    typeof post.category === "object"
+  ) {
+    category = String(
+      post.category.name ||
+      post.category.title ||
+      post.category.slug ||
+      ""
+    ).trim();
+  }
 
-        tags = post.tags;
+  /*
+   * Legacy/string compatibility.
+   */
+  if (
+    !category &&
+    typeof post.category === "string"
+  ) {
+    category = post.category.trim();
+  }
 
-      } else if (
-        typeof post.tags === "string"
-      ) {
+  /*
+   * =========================================================
+   * TAG NORMALIZATION
+   * =========================================================
+   */
 
-        try {
+  let tags = [];
 
-          const parsed =
-            JSON.parse(post.tags);
+  if (Array.isArray(post.tags)) {
+    tags = post.tags;
 
-          if (Array.isArray(parsed)) {
-            tags = parsed;
-          } else {
-            tags = post.tags
-              .split(",")
-              .map(tag => tag.trim())
-              .filter(Boolean);
-          }
+  } else if (
+    typeof post.tags === "string"
+  ) {
+    try {
+      const parsed =
+        JSON.parse(post.tags);
 
-        } catch {
-
-          tags = post.tags
-            .split(",")
-            .map(tag => tag.trim())
-            .filter(Boolean);
-
-        }
-
+      if (Array.isArray(parsed)) {
+        tags = parsed;
+      } else {
+        tags = post.tags
+          .split(",")
+          .map(tag => tag.trim())
+          .filter(Boolean);
       }
 
-      return {
-
-        ...post,
-
-        title:
-          post.title ||
-          "Untitled Post",
-
-        content:
-          post.content ||
-          "",
-
-        category:
-          post.category ||
-          post.category_name ||
-          "General",
-
-        tags,
-
-        image_url:
-          post.image_url ||
-          post.cover_image ||
-          post.featured_image ||
-          "",
-
-        like_count:
-          Number(post.like_count || 0),
-
-        comment_count:
-          Number(post.comment_count || 0)
-
-      };
-
+    } catch {
+      tags = post.tags
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(Boolean);
     }
+  }
 
+  /*
+   * Convert tag objects:
+   *
+   * {
+   *   id: 1,
+   *   name: "JavaScript",
+   *   slug: "javascript"
+   * }
+   *
+   * into:
+   *
+   * "JavaScript"
+   */
+  tags = tags
+    .map(tag => {
 
+      if (
+        typeof tag === "string"
+      ) {
+        return tag.trim();
+      }
+
+      if (
+        tag &&
+        typeof tag === "object"
+      ) {
+        return String(
+          tag.name ||
+          tag.title ||
+          tag.slug ||
+          ""
+        ).trim();
+      }
+
+      return "";
+
+    })
+    .filter(Boolean);
+
+  /*
+   * Remove duplicates.
+   */
+  tags = [
+    ...new Set(tags)
+  ];
+
+  return {
+    ...post,
+
+    title:
+      post.title ||
+      "Untitled Post",
+
+    content:
+      post.content ||
+      "",
+
+    category:
+      category ||
+      "General",
+
+    category_name:
+      category,
+
+    tags,
+
+    image_url:
+      post.image_url ||
+      post.cover_image ||
+      post.featured_image ||
+      "",
+
+    like_count:
+      Number(
+        post.like_count || 0
+      ),
+
+    comment_count:
+      Number(
+        post.comment_count || 0
+      )
+  };
+}
     /*
      * ========================================================
      * FETCH POSTS
@@ -1729,67 +1825,132 @@ window.API_BASE_URL =
      * ========================================================
      */
 
-    function buildCategories(posts) {
+   function buildCategories(posts) {
+  const categories = posts
+    .map(post => {
+      if (
+        typeof post.category === "string"
+      ) {
+        return post.category.trim();
+      }
 
-      const categories =
-        posts
-          .map(post => post.category)
-          .filter(Boolean);
+      if (
+        post.category &&
+        typeof post.category === "object"
+      ) {
+        return String(
+          post.category.name ||
+          post.category.title ||
+          post.category.slug ||
+          ""
+        ).trim();
+      }
 
-      const unique =
-        [...new Set(categories)]
-          .sort(
-            (a, b) =>
-              a.localeCompare(b)
-          );
+      if (
+        typeof post.category_name === "string"
+      ) {
+        return post.category_name.trim();
+      }
 
-      categoryContainer.innerHTML = `
+      return "";
+    })
+    .filter(Boolean);
 
+  const unique = [
+    ...new Set(categories)
+  ].sort(
+    (a, b) =>
+      a.localeCompare(b)
+  );
+
+  categoryContainer.innerHTML = `
+    <button
+      type="button"
+      class="category-btn ${
+        activeCategory === "all"
+          ? "active"
+          : ""
+      }"
+      data-category="all"
+    >
+      All Posts
+    </button>
+
+    ${unique
+      .map(category => `
         <button
           type="button"
-          class="category-btn ${activeCategory === "all" ? "active" : ""}"
-          data-category="all"
+          class="category-btn ${
+            activeCategory === category
+              ? "active"
+              : ""
+          }"
+          data-category="${escapeHtml(category)}"
         >
-          All Posts
+          ${escapeHtml(category)}
         </button>
+      `)
+      .join("")}
+  `;
 
-        ${unique.map(category => `
+  categoryContainer
+    .querySelectorAll(".category-btn")
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        () => {
+          activeCategory =
+            button.dataset.category;
 
-          <button
-            type="button"
-            class="category-btn ${activeCategory === category ? "active" : ""}"
-            data-category="${escapeHtml(category)}"
-          >
-            ${escapeHtml(category)}
-          </button>
+          renderPosts();
+        }
+      );
+    });
+}
 
-        `).join("")}
+function attachTagFilters() {
+  document
+    .querySelectorAll(".tag-filter")
+    .forEach(button => {
 
-      `;
+      button.addEventListener(
+        "click",
+        event => {
 
-      categoryContainer
-        .querySelectorAll(".category-btn")
-        .forEach(button => {
+          event.preventDefault();
+          event.stopPropagation();
 
-          button.addEventListener(
-            "click",
-            () => {
+          const selectedTag =
+            button.dataset.tag
+              ?.trim()
+              .toLowerCase();
 
-              activeCategory =
-                button.dataset.category;
+          if (!selectedTag) {
+            return;
+          }
 
-              buildCategories(allPosts);
+          filteredPosts =
+            allPosts.filter(post =>
+              Array.isArray(post.tags) &&
+              post.tags.some(tag =>
+                String(tag)
+                  .trim()
+                  .toLowerCase() ===
+                selectedTag
+              )
+            );
 
-              applyFilters();
+          renderFilteredPosts();
 
-            }
-          );
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+        }
+      );
 
-        });
-
-    }
-
-
+    });
+}
     /*
      * ========================================================
      * FILTER
@@ -1943,17 +2104,19 @@ window.API_BASE_URL =
 
                   <div class="post-tags">
 
-                    ${featured.tags
-                      .slice(0, 5)
-                      .map(tag => `
-
-                        <span class="post-tag">
-                          #${escapeHtml(tag)}
-                        </span>
-
-                      `)
-                      .join("")}
-
+${featured.tags
+  .slice(0, 5)
+  .map(tag => `
+    <button
+      type="button"
+      class="post-tag tag-filter"
+      data-tag="${escapeHtml(tag)}"
+      title="View posts tagged ${escapeHtml(tag)}"
+    >
+      #${escapeHtml(tag)}
+    </button>
+  `)
+  .join("")}
                   </div>
 
                 `
@@ -2064,41 +2227,23 @@ window.API_BASE_URL =
 
     function renderPostCard(post) {
 
-      const image =
-        safeUrl(post.image_url);
+    const imageUrl = post.image_url || "https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png";
 
-      return `
-
-        <article
-          class="blog-card"
-          data-post-id="${escapeHtml(post.id)}"
-        >
-
-          <div class="blog-card-image">
-
-            ${
-              image
-
-                ? `
-
-                  <img
-                    src="${escapeHtml(image)}"
-                    alt="${escapeHtml(post.title)}"
-                    loading="lazy"
-                    decoding="async"
-                  />
-
-                `
-
-                : `
-
-                  <div class="no-image">
-                    CM
-                  </div>
-
-                `
-            }
-
+return `
+    <article
+      class="blog-card"
+      data-post-id="${escapeHtml(post.id)}"
+    >
+      <div class="blog-card-image">
+        <img
+          src="${escapeHtml(imageUrl)}"
+          alt="${escapeHtml(post.title)}"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </article>
+}
           </div>
 
           <div class="blog-card-content">
@@ -2146,16 +2291,19 @@ window.API_BASE_URL =
 
                   <div class="post-tags">
 
-                    ${post.tags
-                      .slice(0, 5)
-                      .map(tag => `
-
-                        <span class="post-tag">
-                          #${escapeHtml(tag)}
-                        </span>
-
-                      `)
-                      .join("")}
+${post.tags
+  .slice(0, 5)
+  .map(tag => `
+    <button
+      type="button"
+      class="post-tag tag-filter"
+      data-tag="${escapeHtml(tag)}"
+      title="View posts tagged ${escapeHtml(tag)}"
+    >
+      #${escapeHtml(tag)}
+    </button>
+  `)
+  .join("")}
 
                   </div>
 

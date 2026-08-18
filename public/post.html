@@ -32,7 +32,10 @@
   />
   <meta name="twitter:image" id="twitter-image" content="" />
 
-  <link rel="stylesheet" href="css/style.css" />
+ <link
+  rel="stylesheet"
+  href="https://craig-mzumara.web.app/css/style.css"
+/>
 
   <link
     rel="icon"
@@ -1156,7 +1159,7 @@
     Link copied!
   </div>
 
-  <script src="js/script.js"></script>
+  <script src="https://craig-mzumara.web.app/js/script.js"></script>
 
   <script>
     /*
@@ -1346,7 +1349,7 @@ window.API_BASE_URL =
             "Read this post by Craig Mzumara.";
 
       const postUrl =
-        `${window.location.origin}/post.html?id=${encodeURIComponent(POST_ID)}`;
+        `${window.location.origin}/post/${encodeURIComponent(POST_ID)}`;
 
       /* Title */
 
@@ -2034,7 +2037,7 @@ window.API_BASE_URL =
 
     function getPostUrl() {
 
-      return `${window.location.origin}/post.html?id=${encodeURIComponent(POST_ID)}`;
+    return `${window.location.origin}/post/${encodeURIComponent(POST_ID)}`;
     }
 
     async function sharePost() {

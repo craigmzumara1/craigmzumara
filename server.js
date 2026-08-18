@@ -35,14 +35,54 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({
-  origin: [
-  'https://craig-mzumara.web.app',
-  'http://localhost:3000'
-],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+const allowedOrigins = [
+  "https://craig-mzumara.web.app",
+  "https://craig-mzumara.firebaseapp.com",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      /*
+       * Allow requests with no Origin header.
+       * This covers server-to-server requests and tools.
+       */
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.warn(
+        `Blocked CORS origin: ${origin}`
+      );
+
+      return callback(
+        new Error("Not allowed by CORS")
+      );
+    },
+
+    credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS"
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization"
+    ]
+  })
+);
 
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth, adminRoutes);
