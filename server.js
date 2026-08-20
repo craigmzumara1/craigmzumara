@@ -15,6 +15,7 @@
  */
 
 require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -100,46 +101,178 @@ app.options("*", cors({
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error(`CORS blocked origin: ${origin}`));
+
+    return callback(
+      new Error(`CORS blocked origin: ${origin}`)
+    );
   },
+
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+
+  methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS"
+  ],
+
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Accept"
+  ],
+
   optionsSuccessStatus: 204
 }));
 
+/*
+ * Authentication routes
+ */
 app.use('/api/auth', authRoutes);
 
+/*
+ * Admin authentication
+ */
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth, adminRoutes);
 
+/*
+ * Static file headers
+ */
 const staticSetHeaders = (res, filePath) => {
   if (filePath.endsWith('.webp')) {
     res.setHeader('Content-Type', 'image/webp');
   }
 };
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { setHeaders: staticSetHeaders }));
-app.use(express.static(publicDir, { setHeaders: staticSetHeaders }));
+/*
+ * Uploaded files
+ */
+app.use(
+  '/uploads',
+  express.static(
+    path.join(__dirname, 'uploads'),
+    {
+      setHeaders: staticSetHeaders
+    }
+  )
+);
 
+/*
+ * ============================================================
+ * PUBLIC BLOG POST ROUTE
+ * ============================================================
+ *
+ * This fixes:
+ *
+ *     Cannot GET /post/27
+ *
+ * The existing blog router already contains:
+ *
+ *     GET /render/:postId
+ *
+ * which generates the complete server-rendered post page
+ * including:
+ *
+ * - title
+ * - description
+ * - Open Graph title
+ * - Open Graph description
+ * - Open Graph image
+ * - Open Graph URL
+ * - Twitter card
+ * - Twitter title
+ * - Twitter description
+ * - Twitter image
+ * - canonical URL
+ *
+ * Instead of creating another renderer, we internally rewrite:
+ *
+ *     /post/27
+ *
+ * to:
+ *
+ *     /render/27
+ *
+ * and let the existing blog renderer handle it.
+ */
+app.get('/post/:id', (req, res, next) => {
+  const postId = req.params.id;
+
+  /*
+   * Make sure the ID is numeric before passing it
+   * to the existing blog renderer.
+   */
+  if (!/^\d+$/.test(postId)) {
+    return res.status(400).send('Invalid post ID');
+  }
+
+  /*
+   * The blog router expects:
+   *
+   *     /render/:postId
+   *
+   * so change the URL internally before passing the
+   * request into that router.
+   */
+  req.url = `/render/${postId}`;
+
+  blogRoutes(req, res, next);
+});
+
+/*
+ * Static frontend files
+ */
+app.use(
+  express.static(
+    publicDir,
+    {
+      setHeaders: staticSetHeaders
+    }
+  )
+);
+
+/*
+ * API routes
+ */
 app.use('/api/images', imagesRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/blog', likesRoutes);
 app.use('/api/blog', commentsRoutes);
 
-// Fallback compatibility route aliases for legacy frontend endpoints
+/*
+ * Fallback compatibility route aliases for legacy frontend endpoints
+ */
 app.get(['/api/posts', '/api/posts/*'], (req, res) => {
-  const targetPath = req.path.replace('/api/posts', '/api/blog/posts');
+  const targetPath = req.path.replace(
+    '/api/posts',
+    '/api/blog/posts'
+  );
+
   res.redirect(307, targetPath);
 });
 
+/*
+ * Start server
+ */
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.');
+
+  if (
+    !process.env.SUPABASE_URL ||
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    console.warn(
+      'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.'
+    );
   }
+
   if (!process.env.DATABASE_URL) {
-    console.warn('DATABASE_URL is missing.');
+    console.warn(
+      'DATABASE_URL is missing.'
+    );
   }
 });
