@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Craig Mzumara — Web Developer & Student</title>
+  
+  <meta name="description" content="Portfolio of Craig Mzumara, a student, web developer, and visual creative from Malawi specializing in web applications and mobile photography." />
+  <meta name="google-site-verification" content="pkLxQxc2WNjfDNu-7zMASxxT0KY_RQCOpJp8rDTlT0Y" />
+  <!-- Open Graph / Social Share Meta Tags -->
+  <!-- Open Graph / Social Share Meta Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://craig-mzumara.web.app/" />
+  <meta property="og:title" content="Craig Mzumara – Creative & Student" />
+  <meta property="og:description" content="Portfolio of Craig Mzumara, a student, web developer, and visual creative from Malawi specializing in web applications." />
+  <meta property="og:image" content="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309855/image_3.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://craig-mzumara.web.app/" />
+  <meta name="twitter:title" content="Craig Mzumara – Creative & Student" />
+  <meta name="twitter:description" content="Portfolio of Craig Mzumara, a student, web developer, and visual creative from Malawi specializing in web applications." />
+  <meta name="twitter:image" content="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309855/image_3.jpg" />
+  <!-- Inline SVG Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231c1c22'/><text x='50' y='65' font-family='sans-serif' font-size='45' font-weight='bold' fill='%23ffe600' text-anchor='middle'>CM</text></svg>">
+
+  <!-- Default to Dark Mode First -->
+  <script>
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  </script>
+  
+ <link
+  rel="stylesheet"
+  href="/css/style.css"
+/>
+  
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Craig Mzumara",
+      "url": "https://craig-mzumara.web.app/",
+      "jobTitle": "Web Developer & Student",
+      "sameAs": [
+        "https://mw.linkedin.com/in/craig-mzumara-7988202b4",
+        "https://github.com/craigmzumara1",
+        "https://www.instagram.com/craigmzumara1",
+        "https://www.facebook.com/craigmzumara1",
+        "https://x.com/craigmzumara1"
+      ]
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Animated Ambient Glow Background -->
+  <div class="bg-glow floating-glow"></div>
+  <div class="bg-glow-secondary floating-glow-delay"></div>
+
+  <!-- Header Navigation -->
+  <header class="navbar-wrapper">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-mark">CM</div>
+          <div class="brand-name">CRAIG <span>MZUMARA</span></div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link active">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="index.html#services" class="nav-link">Services</a></li>
+          <li><a href="index.html#projects" class="nav-link">Projects</a></li>
+          <li><a href="index.html#photography" class="nav-link">Photography</a></li>
+          <li><a href="blog.html" class="nav-link nav-blog-pill">Blog</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <!-- Sun Icon (Light Mode) -->
+            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <!-- Moon Icon (Dark Mode) -->
+            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <a href="#contact" class="cta-btn-nav">Say Hello</a>
+
+          <!-- Mobile Menu Trigger -->
+          <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Navigation">
+            <svg class="menu-open-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <svg class="menu-close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+  <!-- Mobile Drawer Nav -->
+<div id="mobile-drawer" class="mobile-drawer">
+  <ul class="mobile-nav-links">
+    <li><a href="index.html#home" class="mobile-link">Home</a></li>
+    <li><a href="about.html" class="mobile-link">About</a></li>
+    <li><a href="index.html#services" class="mobile-link">Services</a></li>
+    <li><a href="index.html#projects" class="mobile-link">Projects</a></li>
+    <li><a href="index.html#photography" class="mobile-link">Photography</a></li>
+    <li><a href="blog.html" class="mobile-link">Blog</a></li>
+    <li><a href="index.html#contact" class="mobile-link">Contact</a></li>
+  </ul>
+</div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="container hero-grid">
+      
+      <!-- Left Column: Story & Introduction -->
+       <canvas id="hero-canvas"></canvas>
+      <div class="hero-content reveal-on-scroll">
+        <div class="greeting-pill pulse-border">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+
+        <h1 class="hero-title">
+          Hi, I’m <span class="highlight">Craig Mzumara</span> — Student, Creator & Tech Enthusiast.
+        </h1>
+
+        <!-- Modern Portrait Frame Inserted Above Paragraph -->
+        <div class="hero-portrait-frame">
+          <div class="portrait-wrapper">
+           <img src="https://res.cloudinary.com/v1nymi7j/image/upload/v1786309710/image.jpg" alt="Craig Mzumara" class="portrait-img lazy-img" loading="eager" decoding="async" onload="this.classList.add('loaded')" />
+            
+            <!-- Modern Tech Overlays -->
+            <div class="portrait-overlay"></div>
+            <div class="portrait-badge">
+              <span class="status-dot"></span>
+              <span>Online</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="hero-bio">
+          I'm a 22-year-old student studying <strong>Mathematics and Computer Science</strong> in Zomba, Malawi. I combine logical thinking with creative design to build web applications, explore mobile photography, and color grade visual stories.
+        </p>
+
+        <!-- Interest Pills with Inline Icons -->
+        <div class="interest-pills">
+          <span class="pill highlighted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Mathematics
+          </span>
+          <span class="pill highlighted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Web Creation
+          </span>
+          <span class="pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Mobile Photography
+          </span>
+          <span class="pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+            Color Grading
+          </span>
+          <span class="pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 11 10 7 14 11 18 7 22 11 22 21 2 21 2 11 6 11"/></svg>
+            Gaming & Music
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="hero-actions">
+          <a href="index.html#projects" class="btn-primary shimmer-effect">
+            <span>See My Work</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="index.html#photography" class="btn-secondary">View Photos</a>
+        </div>
+      </div>
+       </section>
+      
+
+
+      <!-- Footer -->
+  <footer style="padding: 30px 0; border-top: 1px solid var(--border-color, #222); margin-top: auto;">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <p>© 2026 Craig Mzumara. All rights reserved.</p>
+      <a href="about.html" class="back-to-top">
+        <span>Back to top</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+      </a>
+    </div>
+  </footer>
+
+ <script src="/js/script.js"></script>
+</body>
+</html>
