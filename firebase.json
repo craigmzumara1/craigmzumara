@@ -2,22 +2,20 @@
   "hosting": {
     "public": "public",
     "cleanUrls": true,
-    "rewrites": [
-      {
-        "source": "/post/:id",
-        "function": {
-          "functionId": "post",
-          "region": "us-central1"
-        }
-      }
-    ],
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/post/**",
+        "destination": "/post.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
-  },
-  "functions": {
-    "source": "functions"
   }
 }

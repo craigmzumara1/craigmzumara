@@ -22,6 +22,17 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
+// Helper function to safely update or append meta tags in HTML
+function setMetaTag(html, attr, attrName, content) {
+  const regex = new RegExp(`<meta\\s+[^>]*${attr}=["']${attrName}["'][^>]*\\/?>`, 'gi');
+  const newTag = `<meta ${attr}="${attrName}" content="${escapeHtml(content)}" />`;
+
+  if (regex.test(html)) {
+    return html.replace(regex, newTag);
+  }
+  return html.replace('</head>', `  ${newTag}\n</head>`);
+}
+
 // 1. GET /posts
 router.get(['/posts', '/'], async (req, res) => {
   try {
@@ -340,6 +351,11 @@ router.get('/tags', async (req, res) => {
 router.get(['/posts/:postId', '/:postId'], async (req, res) => {
   try {
     const postId = parseInt(req.params.postId, 10);
+
+    if (!Number.isInteger(postId)) {
+      return res.status(400).json({ error: 'Invalid post ID' });
+    }
+
     const result = await query(`
       SELECT
         p.*,
@@ -415,210 +431,111 @@ router.get(['/posts/:postId', '/:postId'], async (req, res) => {
 // 6. GET /render/:postId
 router.get('/render/:postId', async (req, res) => {
   try {
-    const postId =
-      parseInt(req.params.postId, 10);
+    const postId = parseInt(req.params.postId, 10);
 
     if (!Number.isInteger(postId)) {
-      return res
-        .status(400)
-        .send('Invalid post ID');
+      return res.status(400).send('Invalid post ID');
     }
 
     const result = await query(
       `
       SELECT
         p.*,
-
         COALESCE(l.like_count, 0) AS like_count,
-
-        COALESCE(
-          c.comment_count,
-          0
-        ) AS comment_count
-
+        COALESCE(c.comment_count, 0) AS comment_count
       FROM public.blog_posts p
-
       LEFT JOIN (
-        SELECT
-          post_id,
-          COUNT(*) AS like_count
+        SELECT post_id, COUNT(*) AS like_count
         FROM public.blog_likes
         WHERE post_id = $1
         GROUP BY post_id
-      ) l
-        ON l.post_id = p.id
-
+      ) l ON l.post_id = p.id
       LEFT JOIN (
-        SELECT
-          post_id,
-          COUNT(*) AS comment_count
+        SELECT post_id, COUNT(*) AS comment_count
         FROM public.blog_comments
         WHERE post_id = $1
         GROUP BY post_id
-      ) c
-        ON c.post_id = p.id
-
+      ) c ON c.post_id = p.id
       WHERE p.id = $1
       `,
       [postId]
     );
 
     if (result.rowCount === 0) {
-      return res
-        .status(404)
-        .send('Post not found');
+      return res.status(404).send('Post not found');
     }
 
     const post = result.rows[0];
 
-    const title =
-      post.title ||
-      'Craig Mzumara Blog';
-
-    const description =
-      String(
-        post.excerpt ||
-        post.content ||
-        'Read this post by Craig Mzumara.'
-      )
-        .replace(/\s+/g, ' ')
-        .trim()
-        .substring(0, 160);
+    const title = post.title || 'Craig Mzumara Blog';
+    const description = String(
+      post.excerpt ||
+      post.content ||
+      'Read this post by Craig Mzumara.'
+    )
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 160);
 
     const image =
       post.image_url ||
       'https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png';
 
-    const postUrl =
-      `https://craig-mzumara.web.app/post/${postId}`;
+    const postUrl = `https://craig-mzumara.web.app/post/${postId}`;
 
-    let postHtml =
-      fs.readFileSync(
-        POST_TEMPLATE_PATH,
-        'utf8'
-      );
+    let postHtml = fs.readFileSync(POST_TEMPLATE_PATH, 'utf8');
 
+    // 1. Template Placeholder Replacements
     postHtml = postHtml
-      .replace(
-        /%POST_TITLE%/g,
-        escapeHtml(title)
-      )
-      .replace(
-        /%POST_DESCRIPTION%/g,
-        escapeHtml(description)
-      )
-      .replace(
-        /%POST_IMAGE%/g,
-        escapeHtml(image)
-      )
-      .replace(
-        /%POST_URL%/g,
-        escapeHtml(postUrl)
-      )
-      .replace(
-        /%POST_ID%/g,
-        String(postId)
-      )
-      .replace(
-        /%POST_CONTENT%/g,
-        escapeHtml(post.content || '')
-      )
-      .replace(
-        /%POST_CREATED_AT%/g,
-        escapeHtml(
-          new Date(
-            post.created_at
-          ).toLocaleDateString()
-        )
-      )
-      .replace(
-        /%POST_LIKE_COUNT%/g,
-        String(
-          post.like_count || 0
-        )
-      )
-      .replace(
-        /%POST_COMMENT_COUNT%/g,
-        String(
-          post.comment_count || 0
-        )
-      );
+      .replace(/%POST_TITLE%/g, escapeHtml(title))
+      .replace(/%POST_DESCRIPTION%/g, escapeHtml(description))
+      .replace(/%POST_IMAGE%/g, escapeHtml(image))
+      .replace(/%POST_URL%/g, escapeHtml(postUrl))
+      .replace(/%POST_ID%/g, String(postId))
+      .replace(/%POST_CONTENT%/g, escapeHtml(post.content || ''))
+      .replace(/%POST_CREATED_AT%/g, escapeHtml(new Date(post.created_at).toLocaleDateString()))
+      .replace(/%POST_LIKE_COUNT%/g, String(post.like_count || 0))
+      .replace(/%POST_COMMENT_COUNT%/g, String(post.comment_count || 0));
 
-    /*
-     * Make absolutely sure crawlers receive
-     * the correct metadata in the initial HTML.
-     */
-
-    postHtml = postHtml
-      .replace(
-        /<title id="page-title">[\s\S]*?<\/title>/,
-        `<title id="page-title">${escapeHtml(title)}</title>`
-      )
-      .replace(
-        /<meta\s+name="description"\s+id="meta-description"\s+content="[^"]*"\s*\/?>/,
-        `<meta name="description" id="meta-description" content="${escapeHtml(description)}" />`
-      )
-      .replace(
-        /<meta\s+property="og:title"\s+id="og-title"\s+content="[^"]*"\s*\/?>/,
-        `<meta property="og:title" id="og-title" content="${escapeHtml(title)}" />`
-      )
-      .replace(
-        /<meta\s+property="og:description"\s+id="og-description"\s+content="[^"]*"\s*\/?>/,
-        `<meta property="og:description" id="og-description" content="${escapeHtml(description)}" />`
-      )
-      .replace(
-        /<meta\s+property="og:image"\s+id="og-image"\s+content="[^"]*"\s*\/?>/,
-        `<meta property="og:image" id="og-image" content="${escapeHtml(image)}" />`
-      )
-      .replace(
-        /<meta\s+property="og:url"\s+id="og-url"\s+content="[^"]*"\s*\/?>/,
-        `<meta property="og:url" id="og-url" content="${escapeHtml(postUrl)}" />`
-      )
-      .replace(
-        /<meta\s+name="twitter:title"\s+id="twitter-title"\s+content="[^"]*"\s*\/?>/,
-        `<meta name="twitter:title" id="twitter-title" content="${escapeHtml(title)}" />`
-      )
-      .replace(
-        /<meta\s+name="twitter:description"\s+id="twitter-description"\s+content="[^"]*"\s*\/?>/,
-        `<meta name="twitter:description" id="twitter-description" content="${escapeHtml(description)}" />`
-      )
-      .replace(
-        /<meta\s+name="twitter:image"\s+id="twitter-image"\s+content="[^"]*"\s*\/?>/,
-        `<meta name="twitter:image" id="twitter-image" content="${escapeHtml(image)}" />`
-      )
-      .replace(
-        /<meta\s+property="og:image:alt"\s+id="og-image-alt"\s+content="[^"]*"\s*\/?>/,
-        `<meta property="og:image:alt" id="og-image-alt" content="${escapeHtml(title)}" />`
-      )
-      .replace(
-        /<meta\s+name="twitter:image:alt"\s+id="twitter-image-alt"\s+content="[^"]*"\s*\/?>/,
-        `<meta name="twitter:image:alt" id="twitter-image-alt" content="${escapeHtml(title)}" />`
-      )
-      .replace(
-        /<meta\s+name="twitter:url"\s+id="twitter-url"\s+content="[^"]*"\s*\/?>/,
-        `<meta name="twitter:url" id="twitter-url" content="${escapeHtml(postUrl)}" />`
-      )
-      .replace(
-        /<link\s+rel="canonical"\s+id="canonical-url"\s+href="[^"]*"\s*\/>/,
-        `<link rel="canonical" id="canonical-url" href="${escapeHtml(postUrl)}" />`
-      );
-
-    res.setHeader(
-      'Cache-Control',
-      'public, max-age=60'
+    // 2. Explicit Title Injection
+    postHtml = postHtml.replace(
+      /<title[^>]*>[\s\S]*?<\/title>/i,
+      `<title id="page-title">${escapeHtml(title)}</title>`
     );
 
+    // 3. Reliable Open Graph & Twitter Tag Injection
+    postHtml = setMetaTag(postHtml, 'name', 'description', description);
+    postHtml = setMetaTag(postHtml, 'property', 'og:title', title);
+    postHtml = setMetaTag(postHtml, 'property', 'og:description', description);
+    postHtml = setMetaTag(postHtml, 'property', 'og:image', image);
+    postHtml = setMetaTag(postHtml, 'property', 'og:url', postUrl);
+    postHtml = setMetaTag(postHtml, 'property', 'og:type', 'article');
+    postHtml = setMetaTag(postHtml, 'property', 'og:image:alt', title);
+
+    postHtml = setMetaTag(postHtml, 'name', 'twitter:card', 'summary_large_image');
+    postHtml = setMetaTag(postHtml, 'name', 'twitter:title', title);
+    postHtml = setMetaTag(postHtml, 'name', 'twitter:description', description);
+    postHtml = setMetaTag(postHtml, 'name', 'twitter:image', image);
+    postHtml = setMetaTag(postHtml, 'name', 'twitter:image:alt', title);
+    postHtml = setMetaTag(postHtml, 'name', 'twitter:url', postUrl);
+
+    // 4. Canonical Link Tag Injection
+    const canonicalRegex = /<link\s+[^>]*rel=["']canonical["'][^>]*\/>/gi;
+    const newCanonicalTag = `<link rel="canonical" id="canonical-url" href="${escapeHtml(postUrl)}" />`;
+
+    if (canonicalRegex.test(postHtml)) {
+      postHtml = postHtml.replace(canonicalRegex, newCanonicalTag);
+    } else {
+      postHtml = postHtml.replace('</head>', `  ${newCanonicalTag}\n</head>`);
+    }
+
+    res.setHeader('Cache-Control', 'public, max-age=60');
     res.send(postHtml);
 
   } catch (err) {
-    console.error(
-      'Failed to render post view:',
-      err
-    );
-
-    res
-      .status(500)
-      .send('Unable to render post');
+    console.error('Failed to render post view:', err);
+    res.status(500).send('Unable to render post');
   }
 });
+
 module.exports = router;

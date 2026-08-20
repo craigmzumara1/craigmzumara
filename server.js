@@ -134,10 +134,6 @@ app.get(['/api/posts', '/api/posts/*'], (req, res) => {
   res.redirect(307, targetPath);
 });
 
-app.get(['/post/:postId', '/blog/:postId'], (req, res) => {
-  res.redirect(301, `/api/blog/render/${req.params.postId}`);
-});
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
