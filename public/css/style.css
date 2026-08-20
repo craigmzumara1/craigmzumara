@@ -1714,10 +1714,10 @@ img.lazy-img.loaded {
 /* Animated Ambient Background Glow */
 .banner-ambient-glow {
   position: absolute;
-  top: -50%;
-  left: -20%;
-  width: 140%;
-  height: 200%;
+  top: -90%;
+  left: -100%;
+  width: 200%;
+  height: 500%;
   background: radial-gradient(circle, var(--yellow-glow) 0%, transparent 65%);
   pointer-events: none;
   animation: pulseGlow 6s ease-in-out infinite alternate;

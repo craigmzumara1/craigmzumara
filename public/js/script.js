@@ -357,19 +357,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Get current file name (defaults to index.html if root path)
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';
 
-  // 1. If currently on blog.html, highlight Blog link only
-  if (currentPath === 'blog.html') {
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href && href.includes('blog.html')) {
-        link.classList.add('active');
-      } else {
-        link.classList.remove('active');
-      }
-    });
-    return; // Exit so section scroll detection doesn't run on blog page
-  }
-
+ // 1. If currently on blog.html OR about.html, highlight that page link only
+if (currentPath === 'blog.html' || currentPath === 'about.html') {
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href && href.includes(currentPath)) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+  return; 
+}
   // 2. ScrollSpy logic for index.html sections
   function highlightNavOnScroll() {
     const scrollPosition = window.scrollY + 200; // Offset for navbar height
