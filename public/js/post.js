@@ -949,8 +949,9 @@ console.log("Loading post ID:", POST_ID);
        SHARE
        ========================================================= */
 
-   function getPostUrl(postId) {
-  return `${window.location.origin}/post.html?id=${encodeURIComponent(postId)}`;
+  function getPostUrl(postId = POST_ID) {
+  if (!postId) return window.location.href;
+  return `${window.location.origin}/post/${encodeURIComponent(postId)}`;
 }
     async function sharePost() {
 
