@@ -135,9 +135,10 @@ window.API_BASE_URL =
 
 
    function getPostUrl(postId) {
-  // Firebase serves post.html directly. Do not use /post/:id
-  // because that path is not guaranteed to rewrite to post.html.
-  return `${window.location.origin}/post.html?id=${encodeURIComponent(postId)}`;
+  // Use the Firebase share URL. Firebase redirects /post/:id
+  // to Railway's server-rendered metadata endpoint so social
+  // crawlers receive the post-specific Open Graph tags.
+  return `${window.location.origin}/post/${encodeURIComponent(postId)}`;
 }
 
 
@@ -963,9 +964,6 @@ return `
           decoding="async"
         />
       </div>
-    </article>
-}
-          </div>
 
           <div class="blog-card-content">
 

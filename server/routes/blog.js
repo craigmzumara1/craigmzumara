@@ -585,6 +585,18 @@ router.get('/render/:postId', async (req, res) => {
       .replace(
         /<meta\s+name="twitter:image"\s+id="twitter-image"\s+content="[^"]*"\s*\/?>/,
         `<meta name="twitter:image" id="twitter-image" content="${escapeHtml(image)}" />`
+      )
+      .replace(
+        /<meta\s+property="og:image:alt"\s+id="og-image-alt"\s+content="[^"]*"\s*\/?>/,
+        `<meta property="og:image:alt" id="og-image-alt" content="${escapeHtml(title)}" />`
+      )
+      .replace(
+        /<meta\s+name="twitter:image:alt"\s+id="twitter-image-alt"\s+content="[^"]*"\s*\/?>/,
+        `<meta name="twitter:image:alt" id="twitter-image-alt" content="${escapeHtml(title)}" />`
+      )
+      .replace(
+        /<meta\s+name="twitter:url"\s+id="twitter-url"\s+content="[^"]*"\s*\/?>/,
+        `<meta name="twitter:url" id="twitter-url" content="${escapeHtml(postUrl)}" />`
       );
 
     res.setHeader(

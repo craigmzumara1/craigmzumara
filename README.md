@@ -32,3 +32,25 @@ I am currently a student studying Mathematics and Computer Science, channeling m
 *   **GitHub:** [craigmzumara](https://github.com/craigmzumara1)
 *   **Website:** [ craig-mzumara.web.app/]( https://craig-mzumara.web.app/)
 ---
+
+
+## Production admin authentication
+
+The Firebase-hosted admin dashboard authenticates against Railway using a short-lived
+HMAC-SHA256 JWT sent in the `Authorization: Bearer <token>` header.
+
+Set these Railway environment variables:
+
+```text
+ADMIN_USERNAME=craigmzumara1
+ADMIN_PASSWORD=<your-existing-admin-password>
+ADMIN_JWT_SECRET=<long-random-secret>
+ADMIN_JWT_EXPIRES_IN=12h
+```
+
+`ADMIN_JWT_SECRET` must be a strong random secret and must not be committed to GitHub.
+The frontend stores the issued token only in `sessionStorage`, so the admin password is
+never embedded in frontend JavaScript.
+
+For local development, the existing HTTP Basic Auth fallback remains available when
+the frontend and Express server are running on the same origin.

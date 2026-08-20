@@ -1,69 +1,265 @@
 
-   const API_BASE_URL =
+  const API_BASE_URL =
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
       ? "http://localhost:3000"
       : "https://craigmzumara-production.up.railway.app";
 
+  const IS_LOCAL_API =
+    API_BASE_URL.includes("localhost") ||
+    API_BASE_URL.includes("127.0.0.1");
 
-  /*
-   * ==========================================================
-   * AUTHENTICATED REQUEST HELPER
-   * ==========================================================
-   *
-   * IMPORTANT:
-   *
-   * /admin.html is already protected by HTTP Basic Auth
-   * in server.js.
-   *
-   * ==========================================================
-   */
+  const ADMIN_TOKEN_KEY =
+    "craigmzumara_admin_token";
 
-  async function authenticatedRequest(url, options = {}) {
+  let adminLoginPromise = null;
+
+  function getAdminToken() {
+    try {
+      return sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function clearAdminToken() {
+    try {
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    } catch {}
+  }
+
+  function setAdminToken(token) {
+    try {
+      sessionStorage.setItem(
+        ADMIN_TOKEN_KEY,
+        token
+      );
+    } catch {}
+  }
+
+  function ensureAdminLoginModal() {
+    let modal =
+      document.getElementById("admin-auth-modal");
+
+    if (modal) {
+      return modal;
+    }
+
+    modal = document.createElement("div");
+    modal.id = "admin-auth-modal";
+    modal.innerHTML = `
+      <div class="admin-auth-backdrop">
+        <form class="admin-auth-dialog" id="admin-auth-form">
+          <div class="admin-auth-brand">CM</div>
+          <h2>Admin sign in</h2>
+          <p>Sign in to manage your portfolio and blog content.</p>
+
+          <label for="admin-auth-username">Username</label>
+          <input
+            id="admin-auth-username"
+            name="username"
+            type="text"
+            autocomplete="username"
+            value="craigmzumara1"
+            required
+          />
+
+          <label for="admin-auth-password">Password</label>
+          <input
+            id="admin-auth-password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+
+          <p
+            id="admin-auth-error"
+            class="admin-auth-error"
+            role="alert"
+          ></p>
+
+          <button
+            type="submit"
+            id="admin-auth-submit"
+            class="btn-primary"
+          >
+            Sign in
+          </button>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    return modal;
+  }
+
+  async function loginAdmin() {
+    if (IS_LOCAL_API) {
+      return true;
+    }
+
+    const existingToken = getAdminToken();
+
+    if (existingToken) {
+      return true;
+    }
+
+    if (adminLoginPromise) {
+      return adminLoginPromise;
+    }
+
+    adminLoginPromise =
+      new Promise(resolve => {
+        const modal =
+          ensureAdminLoginModal();
+
+        modal.classList.add("active");
+
+        const form =
+          document.getElementById(
+            "admin-auth-form"
+          );
+
+        const username =
+          document.getElementById(
+            "admin-auth-username"
+          );
+
+        const password =
+          document.getElementById(
+            "admin-auth-password"
+          );
+
+        const errorBox =
+          document.getElementById(
+            "admin-auth-error"
+          );
+
+        const submitButton =
+          document.getElementById(
+            "admin-auth-submit"
+          );
+
+        const submit = async event => {
+          event.preventDefault();
+
+          errorBox.textContent = "";
+          submitButton.disabled = true;
+          submitButton.textContent = "Signing in...";
+
+          try {
+            const response = await fetch(
+              `${API_BASE_URL}/api/auth/login`,
+              {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                  username: username.value.trim(),
+                  password: password.value
+                })
+              }
+            );
+
+            const result =
+              await response.json().catch(() => ({}));
+
+            if (!response.ok || !result.success || !result.token) {
+              throw new Error(
+                result.error ||
+                `Authentication failed (HTTP ${response.status}).`
+              );
+            }
+
+            setAdminToken(result.token);
+            password.value = "";
+            modal.classList.remove("active");
+            form.removeEventListener("submit", submit);
+            resolve(true);
+          } catch (error) {
+            console.error("Admin login failed:", error);
+            errorBox.textContent =
+              error.message ||
+              "Unable to sign in.";
+            password.focus();
+            submitButton.disabled = false;
+            submitButton.textContent = "Sign in";
+          }
+        };
+
+        form.addEventListener("submit", submit);
+      }).finally(() => {
+        adminLoginPromise = null;
+      });
+
+    return adminLoginPromise;
+  }
+
+  async function authenticatedRequest(url, options = {}, retry = true) {
+    if (!IS_LOCAL_API && !getAdminToken()) {
+      await loginAdmin();
+    }
+
+    const headers =
+      new Headers(options.headers || {});
+
+    const token =
+      getAdminToken();
+
+    if (token) {
+      headers.set(
+        "Authorization",
+        `Bearer ${token}`
+      );
+    }
 
     let response;
 
     try {
-
       response = await fetch(url, {
         ...options,
-        credentials: "same-origin"
+        headers,
+        credentials: "include"
       });
-
     } catch (error) {
-
       console.error(
         "Railway API network/CORS error:",
         error
       );
 
       throw new Error(
-        "Could not communicate with the Railway server. This is a CORS/network error."
+        "Could not communicate with the Railway server. Check the Railway API and CORS configuration."
       );
-
     }
 
+    if (
+      response.status === 401 &&
+      !IS_LOCAL_API &&
+      retry
+    ) {
+      clearAdminToken();
+      await loginAdmin();
 
-    /*
-     * If Railway returns 401, the original admin
-     * authentication is no longer valid.
-     *
-     * We do NOT show another password prompt here.
-     */
+      return authenticatedRequest(
+        url,
+        options,
+        false
+      );
+    }
 
     if (response.status === 401) {
-
       throw new Error(
-        "Your admin authentication has expired. Please reload the admin page and sign in again."
+        "Admin authentication is required. Please reload the page and sign in again."
       );
-
     }
 
-
     return response;
-
   }
-
 
   /*
    * ==========================================================
@@ -143,6 +339,12 @@
         initializeTheme();
 
         initializeImagePreviews();
+
+        if (!IS_LOCAL_API) {
+          loginAdmin().catch(error => {
+            console.error("Admin authentication failed:", error);
+          });
+        }
 
         initializeBlogCMS();
 

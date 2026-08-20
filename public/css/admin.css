@@ -271,3 +271,95 @@
         width: 100%;
       }
     }
+
+/* Production JWT sign-in modal */
+#admin-auth-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+}
+
+#admin-auth-modal.active {
+  display: block;
+}
+
+.admin-auth-backdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 5, 8, 0.78);
+  backdrop-filter: blur(14px);
+}
+
+.admin-auth-dialog {
+  width: min(100%, 420px);
+  padding: 32px;
+  border: 1px solid var(--yellow-border);
+  border-radius: 24px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+}
+
+.admin-auth-brand {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 18px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--yellow-border);
+  border-radius: 14px;
+  background: var(--yellow-glow);
+  color: var(--yellow-primary);
+  font-weight: 900;
+}
+
+.admin-auth-dialog h2 {
+  margin: 0 0 8px;
+}
+
+.admin-auth-dialog > p {
+  margin: 0 0 22px;
+  color: var(--text-muted);
+}
+
+.admin-auth-dialog label {
+  display: block;
+  margin: 16px 0 7px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.admin-auth-dialog input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  outline: none;
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.admin-auth-dialog input:focus {
+  border-color: var(--yellow-primary);
+  box-shadow: 0 0 0 3px var(--yellow-glow);
+}
+
+.admin-auth-dialog .btn-primary {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 18px;
+  border: 0;
+  cursor: pointer;
+}
+
+.admin-auth-error {
+  min-height: 20px;
+  margin: 12px 0 0 !important;
+  color: #ff6b6b !important;
+  font-size: 0.85rem;
+}

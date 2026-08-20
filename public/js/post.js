@@ -364,6 +364,24 @@ console.log("Loading post ID:", POST_ID);
           "post-image"
         );
 
+      const socialImage =
+        post.image_url ||
+        "https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png";
+
+      document
+        .getElementById("og-image")
+        .setAttribute(
+          "content",
+          socialImage
+        );
+
+      document
+        .getElementById("twitter-image")
+        .setAttribute(
+          "content",
+          socialImage
+        );
+
       if (post.image_url) {
 
         image.src =
@@ -386,20 +404,6 @@ console.log("Loading post ID:", POST_ID);
             "loaded"
           );
         }
-
-        document
-          .getElementById("og-image")
-          .setAttribute(
-            "content",
-            post.image_url
-          );
-
-        document
-          .getElementById("twitter-image")
-          .setAttribute(
-            "content",
-            post.image_url
-          );
 
       } else {
 
