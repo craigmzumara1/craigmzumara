@@ -1,0 +1,18 @@
+{
+  "hosting": {
+    "public": "public",
+    "cleanUrls": true,
+    "redirects": [
+      {
+        "source": "/post/:id",
+        "destination": "https://craigmzumara-production.up.railway.app/api/blog/render/:id",
+        "type": 301
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
