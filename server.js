@@ -20,6 +20,7 @@ const path = require('path');
 const cors = require('cors');
 
 const { adminAuth } = require('./server/middleware/auth');
+const authRoutes = require('./server/routes/auth');
 const imagesRoutes = require('./server/routes/images');
 const adminRoutes = require('./server/routes/admin');
 const blogRoutes = require('./server/routes/blog');
@@ -74,7 +75,7 @@ app.use(
      * We are using HTTP Basic Auth,
      * not cookies/session authentication.
      */
-    credentials: false,
+    credentials: true,
 
     methods: [
       "GET",
@@ -94,7 +95,20 @@ app.use(
   })
 );
 
-app.options("*", cors());
+app.options("*", cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  optionsSuccessStatus: 204
+}));
+
+app.use('/api/auth', authRoutes);
 
 app.use('/admin.html', adminAuth);
 app.use('/api/admin', adminAuth, adminRoutes);

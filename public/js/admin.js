@@ -154,7 +154,7 @@
               `${API_BASE_URL}/api/auth/login`,
               {
                 method: "POST",
-                credentials: "include",
+                credentials: "omit",
                 headers: {
                   "Content-Type": "application/json",
                   "Accept": "application/json"

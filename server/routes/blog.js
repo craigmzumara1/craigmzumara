@@ -597,6 +597,10 @@ router.get('/render/:postId', async (req, res) => {
       .replace(
         /<meta\s+name="twitter:url"\s+id="twitter-url"\s+content="[^"]*"\s*\/?>/,
         `<meta name="twitter:url" id="twitter-url" content="${escapeHtml(postUrl)}" />`
+      )
+      .replace(
+        /<link\s+rel="canonical"\s+id="canonical-url"\s+href="[^"]*"\s*\/>/,
+        `<link rel="canonical" id="canonical-url" href="${escapeHtml(postUrl)}" />`
       );
 
     res.setHeader(

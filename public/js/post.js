@@ -17,37 +17,33 @@ window.API_BASE_URL =
 
     const urlParams = new URLSearchParams(window.location.search);
 
-let POST_ID =
-  urlParams.get("id") ||
-  "%POST_ID%";
+let POST_ID = urlParams.get("id") || "";
 
 /*
- * Also support:
- * /post/123
- * /post.html?id=123
+ * Firebase serves /post/:id internally as /post.html.
+ * The browser URL remains /post/:id, so read the ID from
+ * the pathname first and fall back to ?id=123.
  */
-if (!POST_ID || POST_ID === "%POST_ID%") {
-  const pathParts = window.location.pathname
-    .split("/")
-    .filter(Boolean);
+const pathParts = window.location.pathname
+  .split("/")
+  .filter(Boolean);
 
-  const postIndex = pathParts.indexOf("post");
+const postIndex = pathParts.indexOf("post");
 
-  if (
-    postIndex !== -1 &&
-    pathParts[postIndex + 1]
-  ) {
-    POST_ID = pathParts[postIndex + 1];
-  }
+if (postIndex !== -1 && pathParts[postIndex + 1]) {
+  POST_ID = pathParts[postIndex + 1];
 }
 
-/*
- * Make sure the ID is actually numeric.
- */
 POST_ID = String(POST_ID || "").trim();
 
+/* Only accept positive integer post IDs. */
+if (!/^\d+$/.test(POST_ID)) {
+  POST_ID = "";
+}
+
 console.log("Loading post ID:", POST_ID);
-    /* =========================================================
+
+/* =========================================================
        HELPERS
        ========================================================= */
 
@@ -256,7 +252,7 @@ console.log("Loading post ID:", POST_ID);
             "Read this post by Craig Mzumara.";
 
       const postUrl =
-        `${window.location.origin}/post/${encodeURIComponent(POST_ID)}`;
+        `https://craig-mzumara.web.app/post/${encodeURIComponent(POST_ID)}`;
 
       /* Title */
 
@@ -311,6 +307,13 @@ console.log("Loading post ID:", POST_ID);
           "content",
           description
         );
+
+      const canonical =
+        document.getElementById("canonical-url");
+
+      if (canonical) {
+        canonical.setAttribute("href", postUrl);
+      }
 
       /* Main content */
 

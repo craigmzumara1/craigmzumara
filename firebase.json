@@ -2,11 +2,13 @@
   "hosting": {
     "public": "public",
     "cleanUrls": true,
-    "redirects": [
+    "rewrites": [
       {
         "source": "/post/:id",
-        "destination": "https://craigmzumara-production.up.railway.app/api/blog/render/:id",
-        "type": 301
+        "function": {
+          "functionId": "post",
+          "region": "us-central1"
+        }
       }
     ],
     "ignore": [
@@ -14,5 +16,8 @@
       "**/.*",
       "**/node_modules/**"
     ]
+  },
+  "functions": {
+    "source": "functions"
   }
 }
