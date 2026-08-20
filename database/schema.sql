@@ -1,46 +1,81 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
 CREATE TABLE public.page_images (
-    id SERIAL PRIMARY KEY,
-    section VARCHAR(50) NOT NULL,
-    element_id VARCHAR(50) NOT NULL UNIQUE,
-    title VARCHAR(100),
-    image_url TEXT NOT NULL,
-    subtitle VARCHAR(255),
-    badge VARCHAR(50) DEFAULT 'Mobile Shot',
-    tech_tags TEXT,
-    live_demo_url TEXT,
-    github_url TEXT,
-    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  id integer NOT NULL DEFAULT nextval('page_images_id_seq'::regclass),
+  section character varying NOT NULL,
+  element_id character varying NOT NULL UNIQUE,
+  title character varying,
+  image_url text,
+  subtitle character varying,
+  badge character varying DEFAULT 'Mobile Shot'::character varying,
+  tech_tags text,
+  live_demo_url text,
+  github_url text,
+  updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT page_images_pkey PRIMARY KEY (id)
 );
-
 CREATE TABLE public.blog_posts (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL,
-    image_url TEXT,
-    likes_count INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  id integer NOT NULL DEFAULT nextval('blog_posts_id_seq'::regclass),
+  title character varying NOT NULL,
+  content text NOT NULL,
+  image_url text,
+  likes_count integer DEFAULT 0,
+  created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  slug text,
+  excerpt text,
+  status character varying DEFAULT 'published'::character varying,
+  featured boolean DEFAULT false,
+  published_at timestamp without time zone,
+  updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  category_id integer,
+  CONSTRAINT blog_posts_pkey PRIMARY KEY (id),
+  CONSTRAINT blog_posts_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.blog_categories(id)
 );
-
 CREATE TABLE public.blog_comments (
-    id SERIAL PRIMARY KEY,
-    post_id INTEGER REFERENCES public.blog_posts(id) ON DELETE CASCADE,
-    author_name VARCHAR(100) NOT NULL,
-    comment_text TEXT NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  id integer NOT NULL DEFAULT nextval('blog_comments_id_seq'::regclass),
+  post_id integer,
+  author_name character varying NOT NULL,
+  comment_text text NOT NULL,
+  created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT blog_comments_pkey PRIMARY KEY (id),
+  CONSTRAINT blog_comments_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.blog_posts(id)
 );
-
 CREATE TABLE public.blog_likes (
-    id SERIAL PRIMARY KEY,
-    post_id INTEGER REFERENCES public.blog_posts(id) ON DELETE CASCADE,
-    session_id VARCHAR(255) NOT NULL,
-    CONSTRAINT blog_likes_post_id_session_id_key UNIQUE (post_id, session_id)
+  id integer NOT NULL DEFAULT nextval('blog_likes_id_seq'::regclass),
+  post_id integer,
+  session_id character varying NOT NULL,
+  CONSTRAINT blog_likes_pkey PRIMARY KEY (id),
+  CONSTRAINT blog_likes_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.blog_posts(id)
 );
-
-CREATE TABLE IF NOT EXISTS public.contact_messages (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  contact VARCHAR(255) NOT NULL,
-  service VARCHAR(255),
-  message TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE public.contact_messages (
+  id integer NOT NULL DEFAULT nextval('contact_messages_id_seq'::regclass),
+  name character varying NOT NULL,
+  contact character varying NOT NULL,
+  service character varying,
+  message text NOT NULL,
+  created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT contact_messages_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.blog_categories (
+  id integer NOT NULL DEFAULT nextval('blog_categories_id_seq'::regclass),
+  name character varying NOT NULL UNIQUE,
+  slug character varying NOT NULL UNIQUE,
+  description text,
+  created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT blog_categories_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.blog_tags (
+  id integer NOT NULL DEFAULT nextval('blog_tags_id_seq'::regclass),
+  name character varying NOT NULL UNIQUE,
+  slug character varying NOT NULL UNIQUE,
+  created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT blog_tags_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.blog_post_tags (
+  post_id integer NOT NULL,
+  tag_id integer NOT NULL,
+  CONSTRAINT blog_post_tags_pkey PRIMARY KEY (post_id, tag_id),
+  CONSTRAINT blog_post_tags_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.blog_posts(id),
+  CONSTRAINT blog_post_tags_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES public.blog_tags(id)
 );
