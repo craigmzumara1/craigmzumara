@@ -24,13 +24,56 @@ function escapeHtml(value) {
 
 // Helper function to safely update or append meta tags in HTML
 function setMetaTag(html, attr, attrName, content) {
-  const regex = new RegExp(`<meta\\s+[^>]*${attr}=["']${attrName}["'][^>]*\\/?>`, 'gi');
-  const newTag = `<meta ${attr}="${attrName}" content="${escapeHtml(content)}" />`;
+  const regex = new RegExp(
+    `<meta\\s+[^>]*${attr}=["']${attrName}["'][^>]*\\/?>`,
+    'i'
+  );
+
+  const escapedContent = escapeHtml(content);
 
   if (regex.test(html)) {
-    return html.replace(regex, newTag);
+    return html.replace(regex, (existingTag) => {
+      /*
+       * Keep ALL existing attributes such as:
+       *
+       * id="meta-description"
+       * id="og-title"
+       * id="og-description"
+       * id="og-image"
+       * id="og-url"
+       * id="twitter-title"
+       * id="twitter-description"
+       * id="twitter-image"
+       * etc.
+       *
+       * Only replace the content value.
+       */
+
+      if (/content\s*=/i.test(existingTag)) {
+        return existingTag.replace(
+          /content\s*=\s*["'][^"']*["']/i,
+          `content="${escapedContent}"`
+        );
+      }
+
+      return existingTag.replace(
+        /\/?>$/,
+        ` content="${escapedContent}"$&`
+      );
+    });
   }
-  return html.replace('</head>', `  ${newTag}\n</head>`);
+
+  /*
+   * If the meta tag does not already exist,
+   * create it normally.
+   */
+  const newTag =
+    `<meta ${attr}="${attrName}" content="${escapedContent}" />`;
+
+  return html.replace(
+    '</head>',
+    `  ${newTag}\n</head>`
+  );
 }
 
 // 1. GET /posts
