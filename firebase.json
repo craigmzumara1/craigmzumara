@@ -10,10 +10,7 @@
     "rewrites": [
       {
         "source": "/post/**",
-        "function": {
-          "functionId": "post",
-          "region": "us-central1"
-        }
+        "destination": "https://craigmzumara-production.up.railway.app/post/**"
       },
       {
         "source": "**",
