@@ -354,22 +354,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-link, .mobile-link');
   
-  // Get current file name (defaults to index.html if root path)
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  // Normalize current file path: extract last segment and remove .html extension
+  const rawSegment = window.location.pathname.split('/').pop() || 'index';
+  const currentPath = rawSegment.replace(/\.html$/, '');
 
- // 1. If currently on blog.html OR about.html, highlight that page link only
-if (currentPath === 'blog.html' || currentPath === 'about.html') {
-  navLinks.forEach(link => {
-    const href = link.getAttribute('href');
-    if (href && href.includes(currentPath)) {
-      link.classList.add('active');
-    } else {
-      link.classList.remove('active');
-    }
-  });
-  return; 
-}
-  // 2. ScrollSpy logic for index.html sections
+  // 1. If currently on blog OR about, highlight that page link only
+  if (currentPath === 'blog' || currentPath === 'about') {
+    navLinks.forEach(link => {
+      const href = link.getAttribute('href') || '';
+      // Strip .html from link href to compare cleanly (e.g., 'about.html' -> 'about')
+      const normalizedHref = href.split('/').pop().replace(/\.html$/, '');
+
+      if (normalizedHref === currentPath) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+    return; 
+  }
+
+  // 2. ScrollSpy logic for index page sections
   function highlightNavOnScroll() {
     const scrollPosition = window.scrollY + 200; // Offset for navbar height
 

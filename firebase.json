@@ -10,7 +10,7 @@
     "rewrites": [
       {
         "source": "/post/**",
-        "destination": "https://craigmzumara-production.up.railway.app/post/**"
+        "destination": "/post.html"
       },
       {
         "source": "**",
