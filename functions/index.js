@@ -1,44 +1,48 @@
-const { onRequest } = require("firebase-functions/v2/https");
+const functions = require("firebase-functions");
+const fs = require("fs");
+const path = require("path");
 
-const RAILWAY_RENDER_BASE =
-  "https://craigmzumara-production.up.railway.app/api/blog/render";
+const RAILWAY_API = "https://craigmzumara-production.up.railway.app";
 
-exports.post = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 60,
-    memory: "256MiB"
-  },
-  async (req, res) => {
-    const match = String(req.path || "").match(/^\/?post\/(\d+)\/?$/);
+exports.renderPost = functions.https.onRequest(async (req, res) => {
+  const pathParts = req.path.split("/").filter(Boolean);
+  const postId = pathParts[pathParts.length - 1];
 
-    if (!match) {
-      return res.status(404).send("Post not found");
-    }
+  const htmlPath = path.join(__dirname, "../public/post.html");
+  let html = fs.readFileSync(htmlPath, "utf8");
 
-    const postId = match[1];
-    const upstreamUrl = `${RAILWAY_RENDER_BASE}/${postId}`;
+  let title = "Craig Mzumara – Creative & Student";
+  let description = "Portfolio and blog of Craig Mzumara.";
+  let image = "https://craig-mzumara.web.app/images/default-og.jpg";
 
+  if (postId && /^\d+$/.test(postId)) {
     try {
-      const upstream = await fetch(upstreamUrl, {
-        method: "GET",
-        headers: {
-          Accept: "text/html"
-        }
-      });
-
-      const html = await upstream.text();
-
-      res.status(upstream.status);
-      res.set("Content-Type", "text/html; charset=utf-8");
-      res.set(
-        "Cache-Control",
-        "public, max-age=60, s-maxage=300, stale-while-revalidate=600"
-      );
-      return res.send(html);
-    } catch (error) {
-      console.error("Firebase post proxy failed:", error);
-      return res.status(502).send("Unable to load post");
+      const response = await fetch(`${RAILWAY_API}/api/blog/posts/${postId}`);
+      if (response.ok) {
+        const post = await response.json();
+        title = post.title || title;
+        description = post.summary || post.excerpt || description;
+        image = post.cover_image || post.image_url || image;
+      }
+    } catch (err) {
+      console.error("Failed to fetch post metadata from Railway:", err);
     }
   }
-);
+
+  const ogTags = `
+    <title>${title} — Craig Mzumara</title>
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
+    <meta property="og:image" content="${image}" />
+    <meta property="og:type" content="article" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
+    <meta name="twitter:image" content="${image}" />
+  `;
+
+  html = html.replace("</head>", `${ogTags}</head>`);
+
+  res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+  res.status(200).send(html);
+});
