@@ -163,64 +163,27 @@ app.use(
 
 /*
  * ============================================================
- * PUBLIC BLOG POST ROUTE
+ * PUBLIC BLOG POST ROUTE (SMART CRAWLER INTERCEPTOR)
  * ============================================================
- *
- * This fixes:
- *
- *     Cannot GET /post/27
- *
- * The existing blog router already contains:
- *
- *     GET /render/:postId
- *
- * which generates the complete server-rendered post page
- * including:
- *
- * - title
- * - description
- * - Open Graph title
- * - Open Graph description
- * - Open Graph image
- * - Open Graph URL
- * - Twitter card
- * - Twitter title
- * - Twitter description
- * - Twitter image
- * - canonical URL
- *
- * Instead of creating another renderer, we internally rewrite:
- *
- *     /post/27
- *
- * to:
- *
- *     /render/27
- *
- * and let the existing blog renderer handle it.
  */
 app.get('/post/:id', (req, res, next) => {
   const postId = req.params.id;
 
-  /*
-   * Make sure the ID is numeric before passing it
-   * to the existing blog renderer.
-   */
   if (!/^\d+$/.test(postId)) {
     return res.status(400).send('Invalid post ID');
   }
 
-  /*
-   * The blog router expects:
-   *
-   *     /render/:postId
-   *
-   * so change the URL internally before passing the
-   * request into that router.
-   */
-  req.url = `/render/${postId}`;
+  const userAgent = req.headers['user-agent'] || '';
+  const isCrawler = /facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|bingbot|googlebot/i.test(userAgent);
 
-  blogRoutes(req, res, next);
+  // If a social media crawler/bot hits this URL, serve the rendered HTML with OG tags
+  if (isCrawler) {
+    req.url = `/render/${postId}`;
+    return blogRoutes(req, res, next);
+  }
+
+  // Real human visitors are redirected to the clean Firebase app URL
+  res.redirect(302, `https://craig-mzumara.web.app/post/${postId}`);
 });
 
 /*
@@ -277,4 +240,5 @@ app.listen(PORT, () => {
     );
   }
 });
+
 module.exports = app;
