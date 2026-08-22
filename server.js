@@ -40,6 +40,7 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   "https://craig-mzumara.web.app",
   "https://craig-mzumara.firebaseapp.com",
+  "https://craigmzumara-production.up.railway.app",
   "http://localhost:3000",
   "http://127.0.0.1:3000"
 ];
