@@ -1,4 +1,4 @@
- /*
+/*
  * ========================================================
  * API CONFIGURATION
  * ========================================================
@@ -7,7 +7,7 @@
  *   Firebase Hosting
  *
  * Backend:
- *   Railway
+ *   vercel
  *
  * Database / Storage:
  *   Supabase
@@ -18,238 +18,164 @@ window.API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
-    : "https://craigmzumara-production.up.railway.app";
+    : "https://craigmzumara.vercel.app";
 
-    /*
-     * ========================================================
-     * STATE
-     * ========================================================
-     */
+/*
+ * ========================================================
+ * STATE
+ * ========================================================
+ */
 
-    let allPosts = [];
+let allPosts = [];
 
-    let filteredPosts = [];
+let filteredPosts = [];
 
-    let activeCategory = "all";
+let activeCategory = "all";
 
-    let searchQuery = "";
+let searchQuery = "";
 
-    let pendingCommentPostId = null;
+let pendingCommentPostId = null;
 
+/*
+ * ========================================================
+ * DOM
+ * ========================================================
+ */
 
-    /*
-     * ========================================================
-     * DOM
-     * ========================================================
-     */
+const feedContainer = document.getElementById("blog-feed");
 
-    const feedContainer =
-      document.getElementById("blog-feed");
+const featuredContainer = document.getElementById("featured-post");
 
-    const featuredContainer =
-      document.getElementById("featured-post");
+const categoryContainer = document.getElementById("category-list");
 
-    const categoryContainer =
-      document.getElementById("category-list");
+const resultsInfo = document.getElementById("blog-results-info");
 
-    const resultsInfo =
-      document.getElementById("blog-results-info");
+const searchInput = document.getElementById("blog-search");
 
-    const searchInput =
-      document.getElementById("blog-search");
+/*
+ * ========================================================
+ * HELPERS
+ * ========================================================
+ */
 
+function getSessionId() {
+  let sid = localStorage.getItem("blog_session_id");
 
+  if (!sid) {
+    sid = "sess_" + Math.random().toString(36).substring(2) + Date.now();
 
-    /*
-     * ========================================================
-     * HELPERS
-     * ========================================================
-     */
+    localStorage.setItem("blog_session_id", sid);
+  }
 
-    function getSessionId() {
+  return sid;
+}
 
-      let sid =
-        localStorage.getItem("blog_session_id");
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
-      if (!sid) {
+function safeUrl(url) {
+  if (!url) return "";
 
-        sid =
-          "sess_" +
-          Math.random()
-            .toString(36)
-            .substring(2) +
-          Date.now();
+  try {
+    const parsed = new URL(url, window.location.origin);
 
-        localStorage.setItem(
-          "blog_session_id",
-          sid
-        );
-
-      }
-
-      return sid;
-
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.href;
     }
+  } catch (error) {
+    console.warn("Invalid image URL:", url);
+  }
 
+  return "";
+}
 
-    function escapeHtml(value) {
-
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-    }
-
-
-    function safeUrl(url) {
-
-      if (!url) return "";
-
-      try {
-
-        const parsed =
-          new URL(url, window.location.origin);
-
-        if (
-          parsed.protocol === "http:" ||
-          parsed.protocol === "https:"
-        ) {
-          return parsed.href;
-        }
-
-      } catch (error) {
-
-        console.warn(
-          "Invalid image URL:",
-          url
-        );
-
-      }
-
-      return "";
-
-    }
-
-
-   function getPostUrl(postId) {
+function getPostUrl(postId) {
   // Use the Firebase share URL. Firebase redirects /post/:id
-  // to Railway's server-rendered metadata endpoint so social
+  // to vercel's server-rendered metadata endpoint so social
   // crawlers receive the post-specific Open Graph tags.
   return `${window.location.origin}/post/${encodeURIComponent(postId)}`;
 }
 
+function timeAgo(dateString) {
+  const date = new Date(dateString);
 
-    function timeAgo(dateString) {
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
 
-      const date =
-        new Date(dateString);
+  const now = new Date();
 
-      if (Number.isNaN(date.getTime())) {
-        return "";
-      }
+  const seconds = Math.floor((now - date) / 1000);
 
-      const now =
-        new Date();
+  if (seconds < 60) {
+    return "just now";
+  }
 
-      const seconds =
-        Math.floor(
-          (now - date) / 1000
-        );
+  const minutes = Math.floor(seconds / 60);
 
-      if (seconds < 60) {
-        return "just now";
-      }
+  if (minutes < 60) {
+    return `${minutes}m ago`;
+  }
 
-      const minutes =
-        Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
 
-      if (minutes < 60) {
-        return `${minutes}m ago`;
-      }
+  if (hours < 24) {
+    return `${hours}h ago`;
+  }
 
-      const hours =
-        Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
 
-      if (hours < 24) {
-        return `${hours}h ago`;
-      }
+  if (days < 7) {
+    return `${days}d ago`;
+  }
 
-      const days =
-        Math.floor(hours / 24);
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
-      if (days < 7) {
-        return `${days}d ago`;
-      }
+function calculateReadingTime(content) {
+  const text = String(content || "").trim();
 
-      return date.toLocaleDateString(
-        undefined,
-        {
-          year: "numeric",
-          month: "short",
-          day: "numeric"
-        }
-      );
+  if (!text) {
+    return "1 min read";
+  }
 
-    }
+  const words = text.split(/\s+/).filter(Boolean).length;
 
+  const minutes = Math.max(1, Math.ceil(words / 200));
 
-    function calculateReadingTime(content) {
+  return `${minutes} min read`;
+}
 
-      const text =
-        String(content || "")
-          .trim();
+function getExcerpt(content, length = 180) {
+  const text = String(content || "")
+    .replace(/\s+/g, " ")
+    .trim();
 
-      if (!text) {
-        return "1 min read";
-      }
+  if (text.length <= length) {
+    return text;
+  }
 
-      const words =
-        text
-          .split(/\s+/)
-          .filter(Boolean)
-          .length;
+  return text.substring(0, length).trim() + "...";
+}
 
-      const minutes =
-        Math.max(
-          1,
-          Math.ceil(words / 200)
-        );
-
-      return `${minutes} min read`;
-
-    }
-
-
-    function getExcerpt(content, length = 180) {
-
-      const text =
-        String(content || "")
-          .replace(/\s+/g, " ")
-          .trim();
-
-      if (text.length <= length) {
-        return text;
-      }
-
-      return (
-        text.substring(0, length).trim() +
-        "..."
-      );
-
-    }
-
-
-    /*
-     * ========================================================
-     * NORMALIZE POST DATA
-     * ========================================================
-     *
-     * This lets the frontend tolerate slightly different
-     * database field names while we restructure the backend.
-     */
+/*
+ * ========================================================
+ * NORMALIZE POST DATA
+ * ========================================================
+ *
+ * This lets the frontend tolerate slightly different
+ * database field names while we restructure the backend.
+ */
 function normalizePost(post) {
   /*
    * =========================================================
@@ -259,12 +185,8 @@ function normalizePost(post) {
 
   let category = "";
 
-  if (
-    typeof post.category_name === "string" &&
-    post.category_name.trim()
-  ) {
-    category =
-      post.category_name.trim();
+  if (typeof post.category_name === "string" && post.category_name.trim()) {
+    category = post.category_name.trim();
   }
 
   /*
@@ -276,26 +198,16 @@ function normalizePost(post) {
    *   slug: "education"
    * }
    */
-  if (
-    !category &&
-    post.category &&
-    typeof post.category === "object"
-  ) {
+  if (!category && post.category && typeof post.category === "object") {
     category = String(
-      post.category.name ||
-      post.category.title ||
-      post.category.slug ||
-      ""
+      post.category.name || post.category.title || post.category.slug || "",
     ).trim();
   }
 
   /*
    * Legacy/string compatibility.
    */
-  if (
-    !category &&
-    typeof post.category === "string"
-  ) {
+  if (!category && typeof post.category === "string") {
     category = post.category.trim();
   }
 
@@ -309,27 +221,22 @@ function normalizePost(post) {
 
   if (Array.isArray(post.tags)) {
     tags = post.tags;
-
-  } else if (
-    typeof post.tags === "string"
-  ) {
+  } else if (typeof post.tags === "string") {
     try {
-      const parsed =
-        JSON.parse(post.tags);
+      const parsed = JSON.parse(post.tags);
 
       if (Array.isArray(parsed)) {
         tags = parsed;
       } else {
         tags = post.tags
           .split(",")
-          .map(tag => tag.trim())
+          .map((tag) => tag.trim())
           .filter(Boolean);
       }
-
     } catch {
       tags = post.tags
         .split(",")
-        .map(tag => tag.trim())
+        .map((tag) => tag.trim())
         .filter(Boolean);
     }
   }
@@ -348,142 +255,86 @@ function normalizePost(post) {
    * "JavaScript"
    */
   tags = tags
-    .map(tag => {
-
-      if (
-        typeof tag === "string"
-      ) {
+    .map((tag) => {
+      if (typeof tag === "string") {
         return tag.trim();
       }
 
-      if (
-        tag &&
-        typeof tag === "object"
-      ) {
-        return String(
-          tag.name ||
-          tag.title ||
-          tag.slug ||
-          ""
-        ).trim();
+      if (tag && typeof tag === "object") {
+        return String(tag.name || tag.title || tag.slug || "").trim();
       }
 
       return "";
-
     })
     .filter(Boolean);
 
   /*
    * Remove duplicates.
    */
-  tags = [
-    ...new Set(tags)
-  ];
+  tags = [...new Set(tags)];
 
   return {
     ...post,
 
-    title:
-      post.title ||
-      "Untitled Post",
+    title: post.title || "Untitled Post",
 
-    content:
-      post.content ||
-      "",
+    content: post.content || "",
 
-    category:
-      category ||
-      "General",
+    category: category || "General",
 
-    category_name:
-      category,
+    category_name: category,
 
     tags,
 
-    image_url:
-      post.image_url ||
-      post.cover_image ||
-      post.featured_image ||
-      "",
+    image_url: post.image_url || post.cover_image || post.featured_image || "",
 
-    like_count:
-      Number(
-        post.like_count || 0
-      ),
+    like_count: Number(post.like_count || 0),
 
-    comment_count:
-      Number(
-        post.comment_count || 0
-      )
+    comment_count: Number(post.comment_count || 0),
   };
 }
-    /*
-     * ========================================================
-     * FETCH POSTS
-     * ========================================================
-     */
+/*
+ * ========================================================
+ * FETCH POSTS
+ * ========================================================
+ */
 
-    async function fetchBlogPosts() {
+async function fetchBlogPosts() {
+  renderLoading();
 
-      renderLoading();
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/blog/posts`);
 
-      try {
-
-        const response =
-          await fetch(
-            `${API_BASE_URL}/api/blog/posts`
-          );
-
-        if (!response.ok) {
-
-          throw new Error(
-            `HTTP ${response.status}`
-          );
-
-        }
-
-        const data =
-          await response.json();
-
-        if (!Array.isArray(data)) {
-
-          throw new Error(
-            "Invalid posts response."
-          );
-
-        }
-
-        allPosts =
-          data.map(normalizePost);
-
-        applyFilters();
-
-      } catch (error) {
-
-        console.error(
-          "Error fetching blog posts:",
-          error
-        );
-
-        renderError();
-
-      }
-
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
 
+    const data = await response.json();
 
-    /*
-     * ========================================================
-     * LOADING / ERROR
-     * ========================================================
-     */
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid posts response.");
+    }
 
-    function renderLoading() {
+    allPosts = data.map(normalizePost);
 
-      featuredContainer.style.display =
-        "none";
+    applyFilters();
+  } catch (error) {
+    console.error("Error fetching blog posts:", error);
 
-      feedContainer.innerHTML = `
+    renderError();
+  }
+}
+
+/*
+ * ========================================================
+ * LOADING / ERROR
+ * ========================================================
+ */
+
+function renderLoading() {
+  featuredContainer.style.display = "none";
+
+  feedContainer.innerHTML = `
 
         <div class="blog-loading">
 
@@ -497,18 +348,13 @@ function normalizePost(post) {
 
       `;
 
-      resultsInfo.textContent =
-        "Loading posts...";
+  resultsInfo.textContent = "Loading posts...";
+}
 
-    }
+function renderError() {
+  featuredContainer.style.display = "none";
 
-
-    function renderError() {
-
-      featuredContainer.style.display =
-        "none";
-
-      feedContainer.innerHTML = `
+  feedContainer.innerHTML = `
 
         <div class="blog-message">
 
@@ -535,42 +381,29 @@ function normalizePost(post) {
 
       `;
 
-      resultsInfo.textContent =
-        "Unable to load posts.";
+  resultsInfo.textContent = "Unable to load posts.";
+}
 
-    }
+/*
+ * ========================================================
+ * CATEGORIES
+ * ========================================================
+ */
 
-
-    /*
-     * ========================================================
-     * CATEGORIES
-     * ========================================================
-     */
-
-   function buildCategories(posts) {
+function buildCategories(posts) {
   const categories = posts
-    .map(post => {
-      if (
-        typeof post.category === "string"
-      ) {
+    .map((post) => {
+      if (typeof post.category === "string") {
         return post.category.trim();
       }
 
-      if (
-        post.category &&
-        typeof post.category === "object"
-      ) {
+      if (post.category && typeof post.category === "object") {
         return String(
-          post.category.name ||
-          post.category.title ||
-          post.category.slug ||
-          ""
+          post.category.name || post.category.title || post.category.slug || "",
         ).trim();
       }
 
-      if (
-        typeof post.category_name === "string"
-      ) {
+      if (typeof post.category_name === "string") {
         return post.category_name.trim();
       }
 
@@ -578,176 +411,127 @@ function normalizePost(post) {
     })
     .filter(Boolean);
 
-  const unique = [
-    ...new Set(categories)
-  ].sort(
-    (a, b) =>
-      a.localeCompare(b)
-  );
+  const unique = [...new Set(categories)].sort((a, b) => a.localeCompare(b));
 
   categoryContainer.innerHTML = `
     <button
       type="button"
-      class="category-btn ${
-        activeCategory === "all"
-          ? "active"
-          : ""
-      }"
+      class="category-btn ${activeCategory === "all" ? "active" : ""}"
       data-category="all"
     >
       All Posts
     </button>
 
     ${unique
-      .map(category => `
+      .map(
+        (category) => `
         <button
           type="button"
-          class="category-btn ${
-            activeCategory === category
-              ? "active"
-              : ""
-          }"
+          class="category-btn ${activeCategory === category ? "active" : ""}"
           data-category="${escapeHtml(category)}"
         >
           ${escapeHtml(category)}
         </button>
-      `)
+      `,
+      )
       .join("")}
   `;
 
-  categoryContainer
-    .querySelectorAll(".category-btn")
-    .forEach(button => {
-      button.addEventListener(
-        "click",
-        () => {
-          activeCategory =
-            button.dataset.category;
+  categoryContainer.querySelectorAll(".category-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeCategory = button.dataset.category;
 
-          renderPosts();
-        }
-      );
+      renderPosts();
     });
+  });
 }
 
 function attachTagFilters() {
-  document
-    .querySelectorAll(".tag-filter")
-    .forEach(button => {
+  document.querySelectorAll(".tag-filter").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-      button.addEventListener(
-        "click",
-        event => {
+      const selectedTag = button.dataset.tag?.trim().toLowerCase();
 
-          event.preventDefault();
-          event.stopPropagation();
-
-          const selectedTag =
-            button.dataset.tag
-              ?.trim()
-              .toLowerCase();
-
-          if (!selectedTag) {
-            return;
-          }
-
-          filteredPosts =
-            allPosts.filter(post =>
-              Array.isArray(post.tags) &&
-              post.tags.some(tag =>
-                String(tag)
-                  .trim()
-                  .toLowerCase() ===
-                selectedTag
-              )
-            );
-
-          renderFilteredPosts();
-
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-          });
-        }
-      );
-
-    });
-}
-    /*
-     * ========================================================
-     * FILTER
-     * ========================================================
-     */
-
-    function applyFilters() {
-
-      buildCategories(allPosts);
-
-      const query =
-        searchQuery
-          .trim()
-          .toLowerCase();
-
-      filteredPosts =
-        allPosts.filter(post => {
-
-          const categoryMatches =
-            activeCategory === "all" ||
-            String(post.category)
-              .toLowerCase() ===
-              activeCategory.toLowerCase();
-
-          if (!categoryMatches) {
-            return false;
-          }
-
-          if (!query) {
-            return true;
-          }
-
-          const searchable =
-            [
-              post.title,
-              post.content,
-              post.category,
-              ...(post.tags || [])
-            ]
-              .join(" ")
-              .toLowerCase();
-
-          return searchable.includes(query);
-
-        });
-
-      renderBlog();
-
-    }
-
-
-    /*
-     * ========================================================
-     * FEATURED POST
-     * ========================================================
-     */
-
-    function renderFeatured(posts) {
-
-      if (!posts.length) {
-
-        featuredContainer.style.display =
-          "none";
-
+      if (!selectedTag) {
         return;
-
       }
 
-      const featured =
-        posts[0];
+      filteredPosts = allPosts.filter(
+        (post) =>
+          Array.isArray(post.tags) &&
+          post.tags.some(
+            (tag) => String(tag).trim().toLowerCase() === selectedTag,
+          ),
+      );
 
-      const image =
-        safeUrl(featured.image_url);
+      renderFilteredPosts();
 
-      featuredContainer.innerHTML = `
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+  });
+}
+/*
+ * ========================================================
+ * FILTER
+ * ========================================================
+ */
+
+function applyFilters() {
+  buildCategories(allPosts);
+
+  const query = searchQuery.trim().toLowerCase();
+
+  filteredPosts = allPosts.filter((post) => {
+    const categoryMatches =
+      activeCategory === "all" ||
+      String(post.category).toLowerCase() === activeCategory.toLowerCase();
+
+    if (!categoryMatches) {
+      return false;
+    }
+
+    if (!query) {
+      return true;
+    }
+
+    const searchable = [
+      post.title,
+      post.content,
+      post.category,
+      ...(post.tags || []),
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchable.includes(query);
+  });
+
+  renderBlog();
+}
+
+/*
+ * ========================================================
+ * FEATURED POST
+ * ========================================================
+ */
+
+function renderFeatured(posts) {
+  if (!posts.length) {
+    featuredContainer.style.display = "none";
+
+    return;
+  }
+
+  const featured = posts[0];
+
+  const image = safeUrl(featured.image_url);
+
+  featuredContainer.innerHTML = `
 
         <div class="featured-grid">
 
@@ -755,7 +539,6 @@ function attachTagFilters() {
 
             ${
               image
-
                 ? `
 
                   <img
@@ -765,7 +548,6 @@ function attachTagFilters() {
                   />
 
                 `
-
                 : `
 
                   <div class="no-image">
@@ -814,21 +596,19 @@ function attachTagFilters() {
             </h2>
 
             <p class="featured-excerpt">
-              ${escapeHtml(
-                getExcerpt(featured.content, 260)
-              )}
+              ${escapeHtml(getExcerpt(featured.content, 260))}
             </p>
 
             ${
               featured.tags.length
-
                 ? `
 
                   <div class="post-tags">
 
 ${featured.tags
   .slice(0, 5)
-  .map(tag => `
+  .map(
+    (tag) => `
     <button
       type="button"
       class="post-tag tag-filter"
@@ -837,12 +617,12 @@ ${featured.tags
     >
       #${escapeHtml(tag)}
     </button>
-  `)
+  `,
+  )
   .join("")}
                   </div>
 
                 `
-
                 : ""
             }
 
@@ -863,36 +643,26 @@ ${featured.tags
 
       `;
 
-      featuredContainer.style.display =
-        "block";
+  featuredContainer.style.display = "block";
+}
 
-    }
+/*
+ * ========================================================
+ * BLOG CARDS
+ * ========================================================
+ */
 
+function renderBlog() {
+  const posts = filteredPosts;
 
-    /*
-     * ========================================================
-     * BLOG CARDS
-     * ========================================================
-     */
+  resultsInfo.textContent = `${posts.length} ${
+    posts.length === 1 ? "post" : "posts"
+  } found`;
 
-    function renderBlog() {
+  if (!posts.length) {
+    featuredContainer.style.display = "none";
 
-      const posts =
-        filteredPosts;
-
-      resultsInfo.textContent =
-        `${posts.length} ${
-          posts.length === 1
-            ? "post"
-            : "posts"
-        } found`;
-
-      if (!posts.length) {
-
-        featuredContainer.style.display =
-          "none";
-
-        feedContainer.innerHTML = `
+    feedContainer.innerHTML = `
 
           <div class="blog-message">
 
@@ -918,40 +688,32 @@ ${featured.tags
 
         `;
 
-        return;
+    return;
+  }
 
-      }
+  /*
+   * The first result becomes the featured story.
+   */
 
-      /*
-       * The first result becomes the featured story.
-       */
+  renderFeatured(posts);
 
-      renderFeatured(posts);
+  const remainingPosts = posts.slice(1);
 
-      const remainingPosts =
-        posts.slice(1);
+  if (!remainingPosts.length) {
+    feedContainer.innerHTML = "";
 
-      if (!remainingPosts.length) {
+    return;
+  }
 
-        feedContainer.innerHTML = "";
+  feedContainer.innerHTML = remainingPosts.map(renderPostCard).join("");
+}
 
-        return;
+function renderPostCard(post) {
+  const imageUrl =
+    post.image_url ||
+    "https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png";
 
-      }
-
-      feedContainer.innerHTML =
-        remainingPosts
-          .map(renderPostCard)
-          .join("");
-
-    }
-
-
-    function renderPostCard(post) {
-
-    const imageUrl = post.image_url || "https://res.cloudinary.com/v1nymi7j/image/upload/v1786309580/hero-me.png";
-
-return `
+  return `
     <article
       class="blog-card"
       data-post-id="${escapeHtml(post.id)}"
@@ -998,21 +760,19 @@ return `
             </h2>
 
             <p class="blog-card-excerpt">
-              ${escapeHtml(
-                getExcerpt(post.content)
-              )}
+              ${escapeHtml(getExcerpt(post.content))}
             </p>
 
             ${
               post.tags.length
-
                 ? `
 
                   <div class="post-tags">
 
 ${post.tags
   .slice(0, 5)
-  .map(tag => `
+  .map(
+    (tag) => `
     <button
       type="button"
       class="post-tag tag-filter"
@@ -1021,13 +781,13 @@ ${post.tags
     >
       #${escapeHtml(tag)}
     </button>
-  `)
+  `,
+  )
   .join("")}
 
                   </div>
 
                 `
-
                 : ""
             }
 
@@ -1194,186 +954,119 @@ ${post.tags
         </article>
 
       `;
+}
 
-    }
+/*
+ * ========================================================
+ * RESET FILTERS
+ * ========================================================
+ */
 
+function resetBlogFilters() {
+  activeCategory = "all";
 
-    /*
-     * ========================================================
-     * RESET FILTERS
-     * ========================================================
-     */
+  searchQuery = "";
 
-    function resetBlogFilters() {
+  searchInput.value = "";
 
-      activeCategory = "all";
+  applyFilters();
+}
 
-      searchQuery = "";
+/*
+ * ========================================================
+ * SEARCH
+ * ========================================================
+ */
 
-      searchInput.value = "";
+searchInput.addEventListener("input", () => {
+  searchQuery = searchInput.value;
 
-      applyFilters();
+  applyFilters();
+});
 
-    }
+/*
+ * ========================================================
+ * LIKES
+ * ========================================================
+ */
 
+async function likePost(postId, button) {
+  const sessionId = getSessionId();
 
-    /*
-     * ========================================================
-     * SEARCH
-     * ========================================================
-     */
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/blog/posts/${postId}/like`,
+      {
+        method: "POST",
 
-    searchInput.addEventListener(
-      "input",
-      () => {
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-        searchQuery =
-          searchInput.value;
-
-        applyFilters();
-
-      }
+        body: JSON.stringify({
+          session_id: sessionId,
+        }),
+      },
     );
 
-    /*
-     * ========================================================
-     * LIKES
-     * ========================================================
-     */
+    const data = await response.json();
 
-    async function likePost(postId, button) {
+    if (data.success) {
+      const count = document.getElementById(`like-count-${postId}`);
 
-      const sessionId =
-        getSessionId();
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_BASE_URL}/api/blog/posts/${postId}/like`,
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-                session_id: sessionId
-              })
-
-            }
-          );
-
-        const data =
-          await response.json();
-
-        if (data.success) {
-
-          const count =
-            document.getElementById(
-              `like-count-${postId}`
-            );
-
-          if (count) {
-            count.textContent =
-              data.like_count || 0;
-          }
-
-          button.classList.add(
-            "liked"
-          );
-
-        } else if (data.alreadyLiked) {
-
-          button.classList.add(
-            "liked"
-          );
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Like error:",
-          error
-        );
-
+      if (count) {
+        count.textContent = data.like_count || 0;
       }
 
+      button.classList.add("liked");
+    } else if (data.alreadyLiked) {
+      button.classList.add("liked");
+    }
+  } catch (error) {
+    console.error("Like error:", error);
+  }
+}
+
+/*
+ * ========================================================
+ * COMMENTS
+ * ========================================================
+ */
+
+async function toggleComments(postId) {
+  const section = document.getElementById(`comments-section-${postId}`);
+
+  if (!section) {
+    return;
+  }
+
+  section.classList.toggle("open");
+
+  if (section.classList.contains("open")) {
+    await loadComments(postId);
+  }
+}
+
+async function loadComments(postId) {
+  const container = document.getElementById(`comments-list-${postId}`);
+
+  if (!container) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/blog/posts/${postId}/comments`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
 
+    const comments = await response.json();
 
-    /*
-     * ========================================================
-     * COMMENTS
-     * ========================================================
-     */
-
-    async function toggleComments(postId) {
-
-      const section =
-        document.getElementById(
-          `comments-section-${postId}`
-        );
-
-      if (!section) {
-        return;
-      }
-
-      section.classList.toggle(
-        "open"
-      );
-
-      if (
-        section.classList.contains(
-          "open"
-        )
-      ) {
-
-        await loadComments(
-          postId
-        );
-
-      }
-
-    }
-
-
-    async function loadComments(postId) {
-
-      const container =
-        document.getElementById(
-          `comments-list-${postId}`
-        );
-
-      if (!container) {
-        return;
-      }
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_BASE_URL}/api/blog/posts/${postId}/comments`
-          );
-
-        if (!response.ok) {
-          throw new Error(
-            `HTTP ${response.status}`
-          );
-        }
-
-        const comments =
-          await response.json();
-
-        if (
-          !Array.isArray(comments) ||
-          !comments.length
-        ) {
-
-          container.innerHTML = `
+    if (!Array.isArray(comments) || !comments.length) {
+      container.innerHTML = `
 
             <div
               style="
@@ -1387,51 +1080,40 @@ ${post.tags
 
           `;
 
-          return;
+      return;
+    }
 
-        }
-
-        container.innerHTML =
-          comments
-            .map(comment => `
+    container.innerHTML = comments
+      .map(
+        (comment) => `
 
               <div class="comment-item">
 
                 <div class="comment-header">
 
                   <span class="comment-author-name">
-                    ${escapeHtml(
-                      comment.author_name
-                    )}
+                    ${escapeHtml(comment.author_name)}
                   </span>
 
                   <span class="comment-time">
-                    ${timeAgo(
-                      comment.created_at
-                    )}
+                    ${timeAgo(comment.created_at)}
                   </span>
 
                 </div>
 
                 <div class="comment-body">
-                  ${escapeHtml(
-                    comment.comment_text
-                  )}
+                  ${escapeHtml(comment.comment_text)}
                 </div>
 
               </div>
 
-            `)
-            .join("");
+            `,
+      )
+      .join("");
+  } catch (error) {
+    console.error("Comment loading error:", error);
 
-      } catch (error) {
-
-        console.error(
-          "Comment loading error:",
-          error
-        );
-
-        container.innerHTML = `
+    container.innerHTML = `
 
           <div
             style="
@@ -1443,471 +1125,229 @@ ${post.tags
           </div>
 
         `;
+  }
+}
 
-      }
+async function submitComment(postId) {
+  const input = document.getElementById(`comment-input-${postId}`);
 
-    }
+  if (!input) {
+    return;
+  }
 
+  const text = input.value.trim();
 
-    async function submitComment(postId) {
+  if (!text) {
+    return;
+  }
 
-      const input =
-        document.getElementById(
-          `comment-input-${postId}`
-        );
+  let name = localStorage.getItem("visitor_name");
 
-      if (!input) {
-        return;
-      }
+  if (!name) {
+    pendingCommentPostId = postId;
 
-      const text =
-        input.value.trim();
+    document.getElementById("modal-name-input").value = "";
 
-      if (!text) {
-        return;
-      }
+    document.getElementById("name-modal").classList.add("active");
 
-      let name =
-        localStorage.getItem(
-          "visitor_name"
-        );
+    return;
+  }
 
-      if (!name) {
+  await sendCommentToApi(postId, name, text);
 
-        pendingCommentPostId =
-          postId;
+  input.value = "";
+}
 
-        document
-          .getElementById(
-            "modal-name-input"
-          )
-          .value = "";
+async function sendCommentToApi(postId, name, text) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/blog/posts/${postId}/comments`,
+      {
+        method: "POST",
 
-        document
-          .getElementById(
-            "name-modal"
-          )
-          .classList.add(
-            "active"
-          );
-
-        return;
-
-      }
-
-      await sendCommentToApi(
-        postId,
-        name,
-        text
-      );
-
-      input.value = "";
-
-    }
-
-
-    async function sendCommentToApi(
-      postId,
-      name,
-      text
-    ) {
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_BASE_URL}/api/blog/posts/${postId}/comments`,
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-                author_name: name,
-                comment_text: text
-              })
-
-            }
-          );
-
-        const data =
-          await response.json();
-
-        if (data.success) {
-
-          await loadComments(
-            postId
-          );
-
-          const count =
-            document.getElementById(
-              `comment-count-${postId}`
-            );
-
-          if (count) {
-
-            count.textContent =
-              data.comment_count || 0;
-
-          }
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Comment submission error:",
-          error
-        );
-
-      }
-
-    }
-
-
-    /*
-     * ========================================================
-     * NAME MODAL
-     * ========================================================
-     */
-
-    document
-      .getElementById(
-        "modal-save-btn"
-      )
-      .addEventListener(
-        "click",
-        async () => {
-
-          const input =
-            document.getElementById(
-              "modal-name-input"
-            );
-
-          const name =
-            input.value.trim();
-
-          if (!name) {
-            input.focus();
-            return;
-          }
-
-          localStorage.setItem(
-            "visitor_name",
-            name
-          );
-
-          document
-            .getElementById(
-              "name-modal"
-            )
-            .classList.remove(
-              "active"
-            );
-
-          if (
-            pendingCommentPostId
-          ) {
-
-            const postId =
-              pendingCommentPostId;
-
-            pendingCommentPostId =
-              null;
-
-            await submitComment(
-              postId
-            );
-
-          }
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "modal-cancel-btn"
-      )
-      .addEventListener(
-        "click",
-        () => {
-
-          pendingCommentPostId =
-            null;
-
-          document
-            .getElementById(
-              "name-modal"
-            )
-            .classList.remove(
-              "active"
-            );
-
-        }
-      );
-
-
-    /*
-     * ========================================================
-     * SHARE
-     * ========================================================
-     */
-
-    function sharePost(postId) {
-
-      const url =
-        getPostUrl(postId);
-
-      const post =
-        allPosts.find(
-          item =>
-            String(item.id) ===
-            String(postId)
-        );
-
-      const title =
-        post?.title ||
-        "Craig Mzumara Post";
-
-      if (
-        navigator.share
-      ) {
-
-        navigator
-          .share({
-            title,
-            text: title,
-            url
-          })
-          .catch(
-            error => {
-              console.warn(
-                "Share canceled:",
-                error
-              );
-            }
-          );
-
-        return;
-
-      }
-
-      openShareModal(
-        url,
-        title
-      );
-
-    }
-
-
-    function openShareModal(
-      url,
-      title
-    ) {
-
-      document
-        .getElementById(
-          "share-whatsapp"
-        )
-        .href =
-        `https://api.whatsapp.com/send?text=${encodeURIComponent(
-          `${title}\n${url}`
-        )}`;
-
-      document
-        .getElementById(
-          "share-twitter"
-        )
-        .href =
-        `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          title
-        )}&url=${encodeURIComponent(
-          url
-        )}`;
-
-      document
-        .getElementById(
-          "share-facebook"
-        )
-        .href =
-        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-          url
-        )}`;
-
-      document
-        .getElementById(
-          "share-copy-btn"
-        )
-        .onclick =
-        async () => {
-
-          try {
-
-            await navigator.clipboard.writeText(
-              url
-            );
-
-            showToast(
-              "Link copied to clipboard!"
-            );
-
-          } catch {
-
-            showToast(
-              "Could not copy the link."
-            );
-
-          }
-
-        };
-
-      document
-        .getElementById(
-          "share-modal"
-        )
-        .classList.add(
-          "active"
-        );
-
-    }
-
-
-    function closeShareModal() {
-
-      document
-        .getElementById(
-          "share-modal"
-        )
-        .classList.remove(
-          "active"
-        );
-
-    }
-
-
-    document
-      .getElementById(
-        "share-close-btn"
-      )
-      .addEventListener(
-        "click",
-        closeShareModal
-      );
-
-
-    document
-      .getElementById(
-        "share-modal"
-      )
-      .addEventListener(
-        "click",
-        event => {
-
-          if (
-            event.target.id ===
-            "share-modal"
-          ) {
-
-            closeShareModal();
-
-          }
-
-        }
-      );
-
-
-    /*
-     * ========================================================
-     * TOAST
-     * ========================================================
-     */
-
-    function showToast(
-      message
-    ) {
-
-      const toast =
-        document.getElementById(
-          "toast"
-        );
-
-      if (!toast) {
-        return;
-      }
-
-      const span =
-        toast.querySelector(
-          "span"
-        );
-
-      if (span) {
-        span.textContent =
-          message;
-      }
-
-      toast.classList.add(
-        "show"
-      );
-
-      setTimeout(
-        () => {
-          toast.classList.remove(
-            "show"
-          );
+        headers: {
+          "Content-Type": "application/json",
         },
-        2500
-      );
 
+        body: JSON.stringify({
+          author_name: name,
+          comment_text: text,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (data.success) {
+      await loadComments(postId);
+
+      const count = document.getElementById(`comment-count-${postId}`);
+
+      if (count) {
+        count.textContent = data.comment_count || 0;
+      }
+    }
+  } catch (error) {
+    console.error("Comment submission error:", error);
+  }
+}
+
+/*
+ * ========================================================
+ * NAME MODAL
+ * ========================================================
+ */
+
+document
+  .getElementById("modal-save-btn")
+  .addEventListener("click", async () => {
+    const input = document.getElementById("modal-name-input");
+
+    const name = input.value.trim();
+
+    if (!name) {
+      input.focus();
+      return;
     }
 
+    localStorage.setItem("visitor_name", name);
 
-    /*
-     * ========================================================
-     * ESCAPE MODALS
-     * ========================================================
-     */
+    document.getElementById("name-modal").classList.remove("active");
 
-    document.addEventListener(
-      "keydown",
-      event => {
+    if (pendingCommentPostId) {
+      const postId = pendingCommentPostId;
 
-        if (
-          event.key !== "Escape"
-        ) {
-          return;
-        }
+      pendingCommentPostId = null;
 
-        document
-          .querySelectorAll(
-            ".modal-overlay.active"
-          )
-          .forEach(modal => {
+      await submitComment(postId);
+    }
+  });
 
-            modal.classList.remove(
-              "active"
-            );
+document.getElementById("modal-cancel-btn").addEventListener("click", () => {
+  pendingCommentPostId = null;
 
-          });
+  document.getElementById("name-modal").classList.remove("active");
+});
 
-      }
-    );
+/*
+ * ========================================================
+ * SHARE
+ * ========================================================
+ */
 
+function sharePost(postId) {
+  const url = getPostUrl(postId);
 
-    /*
-     * ========================================================
-     * START
-     * ========================================================
-     */
+  const post = allPosts.find((item) => String(item.id) === String(postId));
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
+  const title = post?.title || "Craig Mzumara Post";
 
-        fetchBlogPosts();
+  if (navigator.share) {
+    navigator
+      .share({
+        title,
+        text: title,
+        url,
+      })
+      .catch((error) => {
+        console.warn("Share canceled:", error);
+      });
 
-      }
-    );
+    return;
+  }
+
+  openShareModal(url, title);
+}
+
+function openShareModal(url, title) {
+  document.getElementById("share-whatsapp").href =
+    `https://api.whatsapp.com/send?text=${encodeURIComponent(
+      `${title}\n${url}`,
+    )}`;
+
+  document.getElementById("share-twitter").href =
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      title,
+    )}&url=${encodeURIComponent(url)}`;
+
+  document.getElementById("share-facebook").href =
+    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+
+  document.getElementById("share-copy-btn").onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+
+      showToast("Link copied to clipboard!");
+    } catch {
+      showToast("Could not copy the link.");
+    }
+  };
+
+  document.getElementById("share-modal").classList.add("active");
+}
+
+function closeShareModal() {
+  document.getElementById("share-modal").classList.remove("active");
+}
+
+document
+  .getElementById("share-close-btn")
+  .addEventListener("click", closeShareModal);
+
+document.getElementById("share-modal").addEventListener("click", (event) => {
+  if (event.target.id === "share-modal") {
+    closeShareModal();
+  }
+});
+
+/*
+ * ========================================================
+ * TOAST
+ * ========================================================
+ */
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+
+  if (!toast) {
+    return;
+  }
+
+  const span = toast.querySelector("span");
+
+  if (span) {
+    span.textContent = message;
+  }
+
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
+
+/*
+ * ========================================================
+ * ESCAPE MODALS
+ * ========================================================
+ */
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") {
+    return;
+  }
+
+  document.querySelectorAll(".modal-overlay.active").forEach((modal) => {
+    modal.classList.remove("active");
+  });
+});
+
+/*
+ * ========================================================
+ * START
+ * ========================================================
+ */
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetchBlogPosts();
+});

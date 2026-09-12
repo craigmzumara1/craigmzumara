@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-
-
-
 // ============================================================
 // API CONFIGURATION
 // Firebase hosts the frontend.
-// Railway hosts the backend/API.
+// vercel hosts the backend/API.
 // ============================================================
 
 window.API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
-    : "https://craigmzumara-production.up.railway.app";
+    : "https://craigmzumara.vercel.app";
 
-var initialTheme = localStorage.getItem('theme') || 'dark';
-document.documentElement.setAttribute('data-theme', initialTheme);
+var initialTheme = localStorage.getItem("theme") || "dark";
+document.documentElement.setAttribute("data-theme", initialTheme);
 
-const SITE_STORAGE_KEY = 'craigMzumaraSiteData';
+const SITE_STORAGE_KEY = "craigMzumaraSiteData";
 
 function getSiteData() {
   try {
-    return JSON.parse(localStorage.getItem(SITE_STORAGE_KEY)) || { blocks: {}, blogPosts: [] };
+    return (
+      JSON.parse(localStorage.getItem(SITE_STORAGE_KEY)) || {
+        blocks: {},
+        blogPosts: [],
+      }
+    );
   } catch (err) {
     return { blocks: {}, blogPosts: [] };
   }
@@ -50,41 +52,45 @@ function applySiteData() {
   const data = getSiteData();
   if (!data.blocks) return;
 
-  const projectBlock = data.blocks['domasi-preview-img'];
+  const projectBlock = data.blocks["domasi-preview-img"];
   if (projectBlock) {
-    const imgEl = document.getElementById('domasi-preview-img');
+    const imgEl = document.getElementById("domasi-preview-img");
     if (imgEl && projectBlock.image) imgEl.src = projectBlock.image;
 
-    const titleEl = document.querySelector('.web-project-card .project-title');
-    const descEl = document.querySelector('.web-project-card .project-desc');
-    const tagsContainer = document.querySelector('.web-project-card .project-tags');
+    const titleEl = document.querySelector(".web-project-card .project-title");
+    const descEl = document.querySelector(".web-project-card .project-desc");
+    const tagsContainer = document.querySelector(
+      ".web-project-card .project-tags",
+    );
 
     if (titleEl && projectBlock.title) titleEl.textContent = projectBlock.title;
-    if (descEl && projectBlock.subtitle) descEl.textContent = projectBlock.subtitle;
+    if (descEl && projectBlock.subtitle)
+      descEl.textContent = projectBlock.subtitle;
     if (tagsContainer && projectBlock.tech_tags) {
       tagsContainer.innerHTML = projectBlock.tech_tags
-        .split(',')
-        .map(tag => tag.trim())
+        .split(",")
+        .map((tag) => tag.trim())
         .filter(Boolean)
-        .map(tag => `<span class="tag">${tag}</span>`)
-        .join('');
+        .map((tag) => `<span class="tag">${tag}</span>`)
+        .join("");
     }
   }
 
-  ['photo-1', 'photo-2', 'photo-3'].forEach((photoId) => {
+  ["photo-1", "photo-2", "photo-3"].forEach((photoId) => {
     const photoBlock = data.blocks[photoId];
     if (!photoBlock) return;
 
     const imgEl = document.querySelector(`img[data-element-id="${photoId}"]`);
-    const cardEl = imgEl?.closest('.gallery-card');
+    const cardEl = imgEl?.closest(".gallery-card");
 
     if (imgEl && photoBlock.image) imgEl.src = photoBlock.image;
     if (cardEl) {
-      const titleEl = cardEl.querySelector('.card-title');
-      const metaEl = cardEl.querySelector('.card-meta span:first-child');
-      const badgeEl = cardEl.querySelector('.badge-device');
+      const titleEl = cardEl.querySelector(".card-title");
+      const metaEl = cardEl.querySelector(".card-meta span:first-child");
+      const badgeEl = cardEl.querySelector(".badge-device");
       if (titleEl && photoBlock.title) titleEl.textContent = photoBlock.title;
-      if (metaEl && photoBlock.subtitle) metaEl.textContent = photoBlock.subtitle;
+      if (metaEl && photoBlock.subtitle)
+        metaEl.textContent = photoBlock.subtitle;
       if (badgeEl && photoBlock.badge) badgeEl.textContent = photoBlock.badge;
     }
   });
@@ -94,82 +100,92 @@ function setThemeToggle(buttonId) {
   const button = document.getElementById(buttonId);
   const htmlElement = document.documentElement;
   if (!button) return;
-  button.addEventListener('click', () => {
-    const currentTheme = htmlElement.getAttribute('data-theme');
-    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    htmlElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('theme', nextTheme);
+  button.addEventListener("click", () => {
+    const currentTheme = htmlElement.getAttribute("data-theme");
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    htmlElement.setAttribute("data-theme", nextTheme);
+    localStorage.setItem("theme", nextTheme);
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  setThemeToggle('theme-toggle');
-  setThemeToggle('admin-theme-toggle');
+document.addEventListener("DOMContentLoaded", () => {
+  setThemeToggle("theme-toggle");
+  setThemeToggle("admin-theme-toggle");
 
-  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-  const mobileDrawer = document.getElementById('mobile-drawer');
-  const mobileLinks = document.querySelectorAll('.mobile-link');
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const mobileDrawer = document.getElementById("mobile-drawer");
+  const mobileLinks = document.querySelectorAll(".mobile-link");
 
   const closeMobileMenu = () => {
     if (mobileMenuBtn && mobileDrawer) {
-      mobileMenuBtn.classList.remove('active');
-      mobileDrawer.classList.remove('open');
+      mobileMenuBtn.classList.remove("active");
+      mobileDrawer.classList.remove("open");
     }
   };
 
   if (mobileMenuBtn && mobileDrawer) {
-    mobileMenuBtn.addEventListener('click', () => {
-      mobileMenuBtn.classList.toggle('active');
-      mobileDrawer.classList.toggle('open');
+    mobileMenuBtn.addEventListener("click", () => {
+      mobileMenuBtn.classList.toggle("active");
+      mobileDrawer.classList.toggle("open");
     });
-    mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+    mobileLinks.forEach((link) =>
+      link.addEventListener("click", closeMobileMenu),
+    );
   }
 
-  const revealElements = document.querySelectorAll('.reveal-on-scroll');
-  if (revealElements.length && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    revealElements.forEach(el => observer.observe(el));
+  const revealElements = document.querySelectorAll(".reveal-on-scroll");
+  if (revealElements.length && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 },
+    );
+    revealElements.forEach((el) => observer.observe(el));
   }
 
-  const navLinks = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll(".nav-link");
+  const sections = document.querySelectorAll("section");
   if (sections.length) {
-    window.addEventListener('scroll', () => {
-      let currentSection = '';
-      sections.forEach(section => {
+    window.addEventListener("scroll", () => {
+      let currentSection = "";
+      sections.forEach((section) => {
         const sectionTop = section.offsetTop - 120;
         if (window.scrollY >= sectionTop) {
-          currentSection = section.getAttribute('id');
+          currentSection = section.getAttribute("id");
         }
       });
-      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${currentSection}`));
+      navLinks.forEach((link) =>
+        link.classList.toggle(
+          "active",
+          link.getAttribute("href") === `#${currentSection}`,
+        ),
+      );
     });
   }
 
- const contactForm = document.getElementById('contact-form');
-  const toast = document.getElementById('toast');
+  const contactForm = document.getElementById("contact-form");
+  const toast = document.getElementById("toast");
   if (contactForm) {
-    contactForm.addEventListener('submit', async e => {
+    contactForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!toast) return;
 
       const formData = new FormData(contactForm);
-      
+
       // Ensure Web3Forms required fields are set
-      formData.set('access_key', 'cf7a4c43-431f-4461-9efe-627b2d41f612');
+      formData.set("access_key", "cf7a4c43-431f-4461-9efe-627b2d41f612");
 
       const payload = {
-        name: formData.get('name'),
-        contact: formData.get('contact'),
-        service: formData.get('service'),
-        message: formData.get('message')
+        name: formData.get("name"),
+        contact: formData.get("contact"),
+        service: formData.get("service"),
+        message: formData.get("message"),
       };
 
       try {
@@ -179,103 +195,90 @@ document.addEventListener('DOMContentLoaded', () => {
          * problem must never make a successfully sent email
          * look like it failed.
          */
-        const web3Res = await fetch(
-          'https://api.web3forms.com/submit',
-          {
-            method: 'POST',
-            body: formData
-          }
-        );
+        const web3Res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          body: formData,
+        });
 
-        const web3Result =
-          await web3Res.json().catch(() => ({}));
+        const web3Result = await web3Res.json().catch(() => ({}));
 
         if (!web3Res.ok || web3Result.success === false) {
-          console.error(
-            'Web3Forms Error Response:',
-            web3Result
-          );
+          console.error("Web3Forms Error Response:", web3Result);
           throw new Error(
-            web3Result.message ||
-            'The email service rejected the message.'
+            web3Result.message || "The email service rejected the message.",
           );
         }
 
         /*
-         * Save a copy to Railway/PostgreSQL, but do not block
+         * Save a copy to vercel/PostgreSQL, but do not block
          * the email if the database is temporarily unavailable.
          */
         try {
-          const dbRes = await fetch(
-            `${API_BASE_URL}/api/contact`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(payload)
-            }
-          );
+          const dbRes = await fetch(`${API_BASE_URL}/api/contact`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
 
           if (!dbRes.ok) {
             console.warn(
-              'Contact email was sent, but database save failed:',
-              dbRes.status
+              "Contact email was sent, but database save failed:",
+              dbRes.status,
             );
           }
         } catch (dbError) {
           console.warn(
-            'Contact email was sent, but database save failed:',
-            dbError
+            "Contact email was sent, but database save failed:",
+            dbError,
           );
         }
 
-        toast.textContent =
-          'Message sent successfully! I’ll be in touch soon.';
-        toast.classList.add('show');
+        toast.textContent = "Message sent successfully! I’ll be in touch soon.";
+        toast.classList.add("show");
         contactForm.reset();
-        setTimeout(
-          () => toast.classList.remove('show'),
-          4000
-        );
+        setTimeout(() => toast.classList.remove("show"), 4000);
       } catch (err) {
-        console.error('Submission Error:', err);
-        toast.textContent = 'Unable to send message right now. Please try again or reach out directly.';
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 6000);
+        console.error("Submission Error:", err);
+        toast.textContent =
+          "Unable to send message right now. Please try again or reach out directly.";
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 6000);
       }
     });
   }
 
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const lightboxClose = document.getElementById('lightbox-close');
-  const galleryImages = document.querySelectorAll('.card-image-wrap img');
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+  const lightboxClose = document.getElementById("lightbox-close");
+  const galleryImages = document.querySelectorAll(".card-image-wrap img");
 
   const closeLightbox = () => {
-    if (lightbox) lightbox.classList.remove('show');
+    if (lightbox) lightbox.classList.remove("show");
   };
-  galleryImages.forEach(img => {
-    img.addEventListener('click', () => {
+  galleryImages.forEach((img) => {
+    img.addEventListener("click", () => {
       if (lightbox && lightboxImg) {
         lightboxImg.src = img.src;
-        lightbox.classList.add('show');
+        lightbox.classList.add("show");
       }
     });
   });
-  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  if (lightboxClose) lightboxClose.addEventListener("click", closeLightbox);
   if (lightbox) {
-    lightbox.addEventListener('click', event => {
-      if (event.target !== lightboxImg && event.target !== lightboxClose) closeLightbox();
+    lightbox.addEventListener("click", (event) => {
+      if (event.target !== lightboxImg && event.target !== lightboxClose)
+        closeLightbox();
     });
   }
 
-  const compareSlider = document.getElementById('compare-slider');
-  const gradedImg = document.querySelector('.graded-img');
-  const sliderLine = document.getElementById('slider-line');
-  const sliderBtn = document.getElementById('slider-btn');
+  const compareSlider = document.getElementById("compare-slider");
+  const gradedImg = document.querySelector(".graded-img");
+  const sliderLine = document.getElementById("slider-line");
+  const sliderBtn = document.getElementById("slider-btn");
   if (compareSlider && gradedImg && sliderLine && sliderBtn) {
-    compareSlider.addEventListener('input', event => {
+    compareSlider.addEventListener("input", (event) => {
       const sliderValue = event.target.value;
       gradedImg.style.clipPath = `polygon(0 0, ${sliderValue}% 0, ${sliderValue}% 100%, 0 100%)`;
       sliderLine.style.left = `${sliderValue}%`;
@@ -297,13 +300,17 @@ async function loadPageImages() {
     const data = await response.json();
     if (!Array.isArray(data)) return;
 
-    data.forEach(item => {
+    data.forEach((item) => {
       if (!item.element_id) return;
       const imageUrl = item.image_url
-        ? (item.image_url.startsWith('http') ? item.image_url : `${window.location.origin}/${item.image_url}`)
+        ? item.image_url.startsWith("http")
+          ? item.image_url
+          : `${window.location.origin}/${item.image_url}`
         : getFallbackImageUrl();
 
-      const imgEl = document.querySelector(`img[data-element-id="${item.element_id}"]`);
+      const imgEl = document.querySelector(
+        `img[data-element-id="${item.element_id}"]`,
+      );
       if (imgEl) {
         imgEl.src = imageUrl;
       }
@@ -313,31 +320,39 @@ async function loadPageImages() {
         previewImg.src = imageUrl;
       }
 
-      if (item.element_id === 'domasi-preview-img') {
-        const projectImg = document.getElementById('domasi-preview-img');
+      if (item.element_id === "domasi-preview-img") {
+        const projectImg = document.getElementById("domasi-preview-img");
         if (projectImg) projectImg.src = imageUrl;
 
-        const projectTitle = document.querySelector('.web-project-card .project-title');
-        const projectDesc = document.querySelector('.web-project-card .project-desc');
-        const projectTags = document.querySelector('.web-project-card .project-tags');
+        const projectTitle = document.querySelector(
+          ".web-project-card .project-title",
+        );
+        const projectDesc = document.querySelector(
+          ".web-project-card .project-desc",
+        );
+        const projectTags = document.querySelector(
+          ".web-project-card .project-tags",
+        );
 
         if (projectTitle && item.title) projectTitle.textContent = item.title;
-        if (projectDesc && item.subtitle) projectDesc.textContent = item.subtitle;
+        if (projectDesc && item.subtitle)
+          projectDesc.textContent = item.subtitle;
         if (projectTags && item.tech_tags) {
           projectTags.innerHTML = item.tech_tags
-            .split(',')
-            .map(tag => tag.trim())
+            .split(",")
+            .map((tag) => tag.trim())
             .filter(Boolean)
-            .map(tag => `<span class="tag">${tag}</span>`)
-            .join('');
+            .map((tag) => `<span class="tag">${tag}</span>`)
+            .join("");
         }
       }
 
-      const cardEl = imgEl?.closest('.gallery-card') || previewImg?.closest('.gallery-card');
+      const cardEl =
+        imgEl?.closest(".gallery-card") || previewImg?.closest(".gallery-card");
       if (cardEl) {
-        const titleEl = cardEl.querySelector('.card-title');
-        const subtitleEl = cardEl.querySelector('.card-meta span:first-child');
-        const badgeEl = cardEl.querySelector('.badge-device');
+        const titleEl = cardEl.querySelector(".card-title");
+        const subtitleEl = cardEl.querySelector(".card-meta span:first-child");
+        const badgeEl = cardEl.querySelector(".badge-device");
 
         if (titleEl && item.title) titleEl.textContent = item.title;
         if (subtitleEl && item.subtitle) subtitleEl.textContent = item.subtitle;
@@ -345,56 +360,65 @@ async function loadPageImages() {
       }
     });
   } catch (err) {
-    console.error('Failed to load dynamic page images:', err);
+    console.error("Failed to load dynamic page images:", err);
   }
 }
 
 // Active Link & ScrollSpy Handler
-document.addEventListener('DOMContentLoaded', () => {
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link, .mobile-link');
-  
+document.addEventListener("DOMContentLoaded", () => {
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-link, .mobile-link");
+
   // Normalize current file path: extract last segment and remove .html extension
-  const rawSegment = window.location.pathname.split('/').pop() || 'index';
-  const currentPath = rawSegment.replace(/\.html$/, '');
+  const rawSegment = window.location.pathname.split("/").pop() || "index";
+  const currentPath = rawSegment.replace(/\.html$/, "");
 
   // 1. If currently on blog OR about, highlight that page link only
-  if (currentPath === 'blog' || currentPath === 'about') {
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href') || '';
+  if (currentPath === "blog" || currentPath === "about") {
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href") || "";
       // Strip .html from link href to compare cleanly (e.g., 'about.html' -> 'about')
-      const normalizedHref = href.split('/').pop().replace(/\.html$/, '');
+      const normalizedHref = href
+        .split("/")
+        .pop()
+        .replace(/\.html$/, "");
 
       if (normalizedHref === currentPath) {
-        link.classList.add('active');
+        link.classList.add("active");
       } else {
-        link.classList.remove('active');
+        link.classList.remove("active");
       }
     });
-    return; 
+    return;
   }
 
   // 2. ScrollSpy logic for index page sections
   function highlightNavOnScroll() {
     const scrollPosition = window.scrollY + 200; // Offset for navbar height
 
-    sections.forEach(section => {
+    sections.forEach((section) => {
       const sectionTop = section.offsetTop;
       const sectionHeight = section.offsetHeight;
-      const sectionId = section.getAttribute('id');
+      const sectionId = section.getAttribute("id");
 
-      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          const href = link.getAttribute('href');
-          if (href && (href.endsWith(`#${sectionId}`) || href === `#${sectionId}`)) {
-            link.classList.add('active');
+      if (
+        scrollPosition >= sectionTop &&
+        scrollPosition < sectionTop + sectionHeight
+      ) {
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          const href = link.getAttribute("href");
+          if (
+            href &&
+            (href.endsWith(`#${sectionId}`) || href === `#${sectionId}`)
+          ) {
+            link.classList.add("active");
           }
         });
       }
     });
   }
 
-  window.addEventListener('scroll', highlightNavOnScroll);
+  window.addEventListener("scroll", highlightNavOnScroll);
   highlightNavOnScroll(); // Run immediately on page load
 });

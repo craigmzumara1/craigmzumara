@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-require('dotenv').config();
+require("dotenv").config();
 
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
 
-const { adminAuth } = require('./server/middleware/auth');
-const authRoutes = require('./server/routes/auth');
-const imagesRoutes = require('./server/routes/images');
-const adminRoutes = require('./server/routes/admin');
-const blogRoutes = require('./server/routes/blog');
-const contactRoutes = require('./server/routes/contact');
-const likesRoutes = require('./server/routes/likes');
-const commentsRoutes = require('./server/routes/comments');
+const { adminAuth } = require("./server/middleware/auth");
+const authRoutes = require("./server/routes/auth");
+const imagesRoutes = require("./server/routes/images");
+const adminRoutes = require("./server/routes/admin");
+const blogRoutes = require("./server/routes/blog");
+const contactRoutes = require("./server/routes/contact");
+const likesRoutes = require("./server/routes/likes");
+const commentsRoutes = require("./server/routes/comments");
 
 const PORT = process.env.PORT || 3000;
-const publicDir = path.join(__dirname, 'public');
+const publicDir = path.join(__dirname, "public");
 
 const app = express();
 
@@ -40,15 +40,14 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   "https://craig-mzumara.web.app",
   "https://craig-mzumara.firebaseapp.com",
-  "https://craigmzumara-production.up.railway.app",
+  "https://craigmzumara.vercel.app",
   "http://localhost:3000",
-  "http://127.0.0.1:3000"
+  "http://127.0.0.1:3000",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-
       /*
        * Requests without an Origin header are allowed.
        * This includes server-to-server requests.
@@ -61,16 +60,9 @@ app.use(
         return callback(null, true);
       }
 
-      console.warn(
-        "CORS blocked origin:",
-        origin
-      );
+      console.warn("CORS blocked origin:", origin);
 
-      return callback(
-        new Error(
-          `CORS blocked origin: ${origin}`
-        )
-      );
+      return callback(new Error(`CORS blocked origin: ${origin}`));
     },
 
     /*
@@ -79,72 +71,52 @@ app.use(
      */
     credentials: true,
 
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS"
-    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization"
-    ],
+    allowedHeaders: ["Content-Type", "Authorization"],
 
-    optionsSuccessStatus: 204
-  })
+    optionsSuccessStatus: 204,
+  }),
 );
 
-app.options("*", cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
+app.options(
+  "*",
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
 
-    return callback(
-      new Error(`CORS blocked origin: ${origin}`)
-    );
-  },
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
 
-  credentials: true,
+    credentials: true,
 
-  methods: [
-    "GET",
-    "POST",
-    "PUT",
-    "PATCH",
-    "DELETE",
-    "OPTIONS"
-  ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "Accept"
-  ],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
 
-  optionsSuccessStatus: 204
-}));
+    optionsSuccessStatus: 204,
+  }),
+);
 
 /*
  * Authentication routes
  */
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
 
 /*
  * Admin authentication
  */
-app.use('/admin.html', adminAuth);
-app.use('/api/admin', adminAuth, adminRoutes);
+app.use("/admin.html", adminAuth);
+app.use("/api/admin", adminAuth, adminRoutes);
 
 /*
  * Static file headers
  */
 const staticSetHeaders = (res, filePath) => {
-  if (filePath.endsWith('.webp')) {
-    res.setHeader('Content-Type', 'image/webp');
+  if (filePath.endsWith(".webp")) {
+    res.setHeader("Content-Type", "image/webp");
   }
 };
 
@@ -152,13 +124,10 @@ const staticSetHeaders = (res, filePath) => {
  * Uploaded files
  */
 app.use(
-  '/uploads',
-  express.static(
-    path.join(__dirname, 'uploads'),
-    {
-      setHeaders: staticSetHeaders
-    }
-  )
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: staticSetHeaders,
+  }),
 );
 
 /*
@@ -166,15 +135,18 @@ app.use(
  * PUBLIC BLOG POST ROUTE (SMART CRAWLER INTERCEPTOR)
  * ============================================================
  */
-app.get('/post/:id', (req, res, next) => {
+app.get("/post/:id", (req, res, next) => {
   const postId = req.params.id;
 
   if (!/^\d+$/.test(postId)) {
-    return res.status(400).send('Invalid post ID');
+    return res.status(400).send("Invalid post ID");
   }
 
-  const userAgent = req.headers['user-agent'] || '';
-  const isCrawler = /facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|bingbot|googlebot/i.test(userAgent);
+  const userAgent = req.headers["user-agent"] || "";
+  const isCrawler =
+    /facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|bingbot|googlebot/i.test(
+      userAgent,
+    );
 
   // If a social media crawler/bot hits this URL, serve the rendered HTML with OG tags
   if (isCrawler) {
@@ -190,31 +162,25 @@ app.get('/post/:id', (req, res, next) => {
  * Static frontend files
  */
 app.use(
-  express.static(
-    publicDir,
-    {
-      setHeaders: staticSetHeaders
-    }
-  )
+  express.static(publicDir, {
+    setHeaders: staticSetHeaders,
+  }),
 );
 
 /*
  * API routes
  */
-app.use('/api/images', imagesRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/blog', blogRoutes);
-app.use('/api/blog', likesRoutes);
-app.use('/api/blog', commentsRoutes);
+app.use("/api/images", imagesRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/blog", blogRoutes);
+app.use("/api/blog", likesRoutes);
+app.use("/api/blog", commentsRoutes);
 
 /*
  * Fallback compatibility route aliases for legacy frontend endpoints
  */
-app.get(['/api/posts', '/api/posts/*'], (req, res) => {
-  const targetPath = req.path.replace(
-    '/api/posts',
-    '/api/blog/posts'
-  );
+app.get(["/api/posts", "/api/posts/*"], (req, res) => {
+  const targetPath = req.path.replace("/api/posts", "/api/blog/posts");
 
   res.redirect(307, targetPath);
 });
@@ -225,19 +191,12 @@ app.get(['/api/posts', '/api/posts/*'], (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
-  if (
-    !process.env.SUPABASE_URL ||
-    !process.env.SUPABASE_SERVICE_ROLE_KEY
-  ) {
-    console.warn(
-      'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.'
-    );
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.");
   }
 
   if (!process.env.DATABASE_URL) {
-    console.warn(
-      'DATABASE_URL is missing.'
-    );
+    console.warn("DATABASE_URL is missing.");
   }
 });
 

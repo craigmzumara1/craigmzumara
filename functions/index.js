@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const fs = require("fs");
 const path = require("path");
 
-const RAILWAY_API = "https://craigmzumara-production.up.railway.app";
+const VERCEL_API = "https://craigmzumara.vercel.app";
 
 exports.renderPost = functions.https.onRequest(async (req, res) => {
   const pathParts = req.path.split("/").filter(Boolean);
@@ -17,7 +17,7 @@ exports.renderPost = functions.https.onRequest(async (req, res) => {
 
   if (postId && /^\d+$/.test(postId)) {
     try {
-      const response = await fetch(`${RAILWAY_API}/api/blog/posts/${postId}`);
+      const response = await fetch(`${VERCEL_API}/api/blog/posts/${postId}`);
       if (response.ok) {
         const post = await response.json();
         title = post.title || title;
@@ -25,7 +25,7 @@ exports.renderPost = functions.https.onRequest(async (req, res) => {
         image = post.cover_image || post.image_url || image;
       }
     } catch (err) {
-      console.error("Failed to fetch post metadata from Railway:", err);
+      console.error("Failed to fetch post metadata from vercel:", err);
     }
   }
 
